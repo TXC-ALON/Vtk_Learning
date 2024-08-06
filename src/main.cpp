@@ -14,7 +14,7 @@
 #include <functional>
 #include <random>
 #include <vtkProperty.h>
-
+#include "Mainwindow.h"
 class SMainWindow : public QMainWindow
 {
 public:
@@ -75,6 +75,7 @@ private:
         actor->GetProperty()->SetRepresentationToSurface();
 
         vtkNew<vtkRenderer> renderer;
+        renderer->SetBackground(0.733, 0.871, 0.984);
         renderer->AddActor(actor);
 
         window->AddRenderer(renderer);
@@ -94,7 +95,7 @@ private:
 int main(int argc, char *argv[])
 {
     QApplication app(argc, argv);
-    SMainWindow mainWindow;
+    MainWindow mainWindow;
     mainWindow.show();
     return app.exec();
 }

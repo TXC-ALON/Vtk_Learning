@@ -13,11 +13,8 @@ public:
     ~MainWindow();
 
 public:
-    QWidget *centralWidget;
-    QGridLayout *gridLayout;
-    VtkWidget *vtkWidget;
-    vtkNew<vtkGenericOpenGLRenderWindow> window;
-
+    QDockWidget *controlDock;
+    VtkWidget vtkWidget;
     void setupUi(QMainWindow *mainwindow);
     void randomize()
     {

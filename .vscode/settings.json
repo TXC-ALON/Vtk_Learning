@@ -1,5 +1,10 @@
 {
     "files.associations": {
-        "qvboxlayout": "cpp"
+        "qvboxlayout": "cpp",
+        "qstackedlayout": "cpp",
+        "qformlayout": "cpp",
+        "qpushbutton": "cpp",
+        "qpointer": "cpp",
+        "xlocale": "cpp"
     }
 }

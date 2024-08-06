@@ -7,13 +7,13 @@
 #include <QFile>
 #include <QDir>
 #include <QTextStream>
+#include <QApplication>
 
 // GUI模块，提供图形界面相关的功能
 #include <QGuiApplication> // 用于Qt5的应用程序框架
 #include <QIcon>
 #include <QPixmap>
 #include <QScreen>
-
 // Widgets模块，提供标准控件和布局管理器
 #include <QWidget>
 #include <QDockWidget>
@@ -30,6 +30,9 @@
 #include <QListWidget>
 #include <QTreeWidget>
 #include <QStackedWidget>
+#include <QDockWidget>
+
+#include <QLabel>
 #include <QToolBar>
 #include <QStatusBar>
 #include <QMenu>
@@ -44,6 +47,9 @@
 #include <QGridLayout>
 #include <QFormLayout>
 #include <QStackedLayout>
+
+// 指针
+#include <QPointer>
 
 // // 网络模块，提供网络编程功能
 // #include <QNetworkAccessManager>
