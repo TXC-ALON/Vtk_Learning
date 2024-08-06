@@ -5,6 +5,8 @@
         "qformlayout": "cpp",
         "qpushbutton": "cpp",
         "qpointer": "cpp",
-        "xlocale": "cpp"
+        "xlocale": "cpp",
+        "qwidget": "cpp",
+        "qtabwidget": "cpp"
     }
 }

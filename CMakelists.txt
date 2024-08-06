@@ -86,7 +86,9 @@ include_directories(${PROJECT_INCLUDE})
 include_directories(${VTK_INCLUDE})
 # 添加头文件和源文件
 file(GLOB_RECURSE HEADER_FILES "include/*.h")
-source_group(include FILES ${HEADER_FILES})
+file(GLOB_RECURSE UI_FILES "Ui/*.h")
+
+source_group(include FILES ${HEADER_FILES} ${UI_FILES})
 # 添加VTK头文件和源文件
 file(GLOB_RECURSE VTK_HEADER_FILES "${VTK_INCLUDE}/*.h")
 

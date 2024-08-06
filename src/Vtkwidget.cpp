@@ -1,11 +1,11 @@
-#include "Vtkwidget.h"
+#include "Vtkwidget3D.h"
 #include <QVBoxLayout>
 
-VtkWidget::VtkWidget(QWidget *parent) : QWidget(parent)
+VtkWidget3D::VtkWidget3D(QWidget *parent) : QWidget(parent)
 {
 }
 
-VtkWidget::~VtkWidget()
+VtkWidget3D::~VtkWidget3D()
 {
     // Clean up if necessary
 }

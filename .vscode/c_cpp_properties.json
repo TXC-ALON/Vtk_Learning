@@ -4,8 +4,13 @@
             "name": "Win32",
             "includePath": [
                 "${workspaceFolder}/**",
+                "${workspaceFolder}/include",
+                "${workspaceFolder}/Ui",
                 "D:\\Dev\\VTK\\include\\vtk-9.3",
-                "D:\\Qt5\\Qt5.14.2\\5.14.2\\msvc2017_64\\include"
+                "D:\\Qt5\\Qt5.14.2\\5.14.2\\msvc2017_64\\include",
+                "D:/Qt5/Qt5.14.2/5.14.2/msvc2017_64/include/QtWidgets",
+                "D:/Qt5/Qt5.14.2/5.14.2/msvc2017_64/include/QtCore",
+                "D:/Qt5/Qt5.14.2/5.14.2/msvc2017_64/include/QtGui"
             ],
             "defines": [
                 "_DEBUG",

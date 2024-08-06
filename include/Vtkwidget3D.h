@@ -3,18 +3,14 @@
 
 #include <QWidget>
 #include <QVTKOpenGLNativeWidget.h>
-#include <vtkSmartPointer.h>
-#include <vtkRenderer.h>
-#include <vtkRenderWindow.h>
-#include <vtkRenderWindowInteractor.h>
-
-class VtkWidget : public QWidget
+#include <Vtk_headers.h>
+class VtkWidget3D : public QWidget
 {
     Q_OBJECT
 
 public:
-    VtkWidget(QWidget *parent = nullptr);
-    ~VtkWidget();
+    VtkWidget3D(QWidget *parent = nullptr);
+    ~VtkWidget3D();
 
 public:
     QVTKOpenGLNativeWidget *p_vtkWidget;
