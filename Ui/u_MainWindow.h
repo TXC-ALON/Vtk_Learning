@@ -32,6 +32,7 @@ public:
     QDockWidget *controlDock;
     VtkWidget3D vtkWidget;
     vtkSmartPointer<vtkSphereSource> sphere;
+    QPushButton *rotateButton;
 
 public:
     void
@@ -53,29 +54,29 @@ public:
         QPushButton *randomizeButton = new QPushButton("Randomize", MainWindow);
         dockLayout->addWidget(randomizeButton);
 
+        rotateButton = new QPushButton("Rotate", MainWindow);
+        dockLayout->addWidget(rotateButton);
+
         // Vtk
         vtkNew<vtkGenericOpenGLRenderWindow> tempwindow;
         vtkWidget.window = tempwindow;
         vtkWidget.p_vtkWidget = new QVTKOpenGLNativeWidget(MainWindow);
         MainWindow->setCentralWidget(vtkWidget.p_vtkWidget);
-        // VTK setup
         vtkWidget.p_vtkWidget->setRenderWindow(vtkWidget.window.Get());
+        vtkNew<vtkRenderer> renderer;
+        renderer->SetBackground(0.733, 0.871, 0.984);
+        // Show
 
         sphere->SetRadius(1.0);
         sphere->SetThetaResolution(100);
         sphere->SetPhiResolution(100);
-
         vtkNew<vtkDataSetMapper> mapper;
         mapper->SetInputConnection(sphere->GetOutputPort());
-
         vtkNew<vtkActor> actor;
         actor->SetMapper(mapper);
         actor->GetProperty()->SetEdgeVisibility(true);
         actor->GetProperty()->SetRepresentationToSurface();
-        vtkNew<vtkRenderer> renderer;
-        renderer->SetBackground(0.733, 0.871, 0.984);
         renderer->AddActor(actor);
-
         this->vtkWidget.window->AddRenderer(renderer);
         // Setup initial status
         std::mt19937 randEng(0);

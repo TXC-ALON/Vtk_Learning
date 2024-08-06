@@ -21,7 +21,7 @@ public:
     SMainWindow(QWidget *parent = nullptr) : QMainWindow(parent)
     {
         setupUI();
-    }
+        }
 
 private:
     QDockWidget *controlDock;
