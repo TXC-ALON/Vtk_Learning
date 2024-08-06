@@ -19,7 +19,9 @@
 #include <vtkTransform.h>
 #include <vtkAxes.h>
 #include <vtkCylinderSource.h>
-
+#include <vtkPointData.h>
+#include <vtkPolyData.h>
+#include <vtkDoubleArray.h>
 #include <vtkSmartPointer.h>
 #include <vtkRenderer.h>
 #include <vtkRenderWindow.h>

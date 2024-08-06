@@ -2,9 +2,9 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
-#include "Vtkwidget3D.h"
-#include "Qt_headers.h"
-#include <Ui/uiww_MainWindow.h>
+#include <Vtkwidget3D.h>
+#include <Qt_headers.h>
+#include <Ui/u_MainWindow.h>
 
 namespace Ui
 {
