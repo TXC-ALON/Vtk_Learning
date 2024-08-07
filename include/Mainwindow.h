@@ -28,15 +28,10 @@ public:
     Ui::MainWindow *ui;
     RotateWidget *pRotateWidget;
 private slots:
-    // // 导入文件页面
     // void openFileSlot();
-    // // 基台选择页面
     // void openPlatSelectSlot();
-    // // 自动修复页面
     // void AutoRepairSlot();
-    // // 姿态平移页面
     // void MoveSlot();
-    // 姿态旋转页面
     void RotateSlot();
 
 private:

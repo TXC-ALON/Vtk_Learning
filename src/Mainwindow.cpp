@@ -25,17 +25,15 @@ MainWindow::~MainWindow()
 
 void MainWindow::RotateSlot()
 {
-    std::cout << "RotateSlot" << std::endl;
-    // TODO 打开零件旋转页面
+    // std::cout << "RotateSlot" << std::endl;
+
     pRotateWidget->setVisible(true);
     pRotateWidget->InitOpenPage();
 }
 
 void MainWindow::connectSignals(QWidget *widget)
 {
-    // 接受拖动事件
     // setAcceptDrops(true);
-    // 信号槽
     connect(ui->rotateButton, &QPushButton::clicked, this, &MainWindow::RotateSlot);
 }
 
