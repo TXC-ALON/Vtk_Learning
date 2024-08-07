@@ -10,7 +10,10 @@
                 "D:\\Qt5\\Qt5.14.2\\5.14.2\\msvc2017_64\\include",
                 "D:/Qt5/Qt5.14.2/5.14.2/msvc2017_64/include/QtWidgets",
                 "D:/Qt5/Qt5.14.2/5.14.2/msvc2017_64/include/QtCore",
-                "D:/Qt5/Qt5.14.2/5.14.2/msvc2017_64/include/QtGui"
+                "D:/Qt5/Qt5.14.2/5.14.2/msvc2017_64/include/QtGui",
+                "${workspaceFolder}/P3DS",
+                "${workspaceFolder}/P3DS/adMesh",
+                "${workspaceFolder}/P3DS/TriangleMesh"
             ],
             "defines": [
                 "_DEBUG",

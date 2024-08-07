@@ -38,15 +38,34 @@ find_package(VTK COMPONENTS
 )
 
 find_package(Qt5 COMPONENTS Widgets Core Gui REQUIRED)
-set(VTK_INSTALL_PREFIX "D:/Dev/VTK")
+set(Dev_PREFIX "D:/Dev/")
+set(VTK_INSTALL_PREFIX ${Dev_PREFIX}/VTK)
+set(BOOST_ROOT "D:/Dev/Boost/x64")
+set(Boost_INCLUDE_DIR "D:/Dev/Boost/x64/include/boost-1_82/boost")
+set(Boost_INCLUDE_DIR "D:/Dev/Boost/x64/include")
+set(Boost_LIBRARY_DIR "D:/Dev/Boost/x64/lib")
+
+set(Boost_NO_SYSTEM_PATHS ON)
+set(CMAKE_TOOLCHAIN_FILE "" CACHE FILEPATH "Vcpkg toolchain file")
+
+find_package(Boost REQUIRED)
+
+# 输出 Boost 的相关信息
+message("BOOST_ROOT: ${BOOST_ROOT}")
+message("Boost version: ${Boost_VERSION}")
+message("Boost_INCLUDE_DIRS:  ${Boost_INCLUDE_DIRS}")
+message("Boost_LIBRARY_DIRS: ${Boost_LIBRARY_DIRS}")
+message("Boost_LIBRARIES: ${Boost_LIBRARIES}")
+
 message("VTK_INSTALL_PREFIX is ${VTK_INSTALL_PREFIX}")
 set(VTK_DLL_DIRS ${VTK_INSTALL_PREFIX}/bin)
 set(PROJECT_INCLUDE ${CMAKE_CURRENT_SOURCE_DIR}/include)
 set(VTK_INCLUDE ${VTK_INSTALL_PREFIX}/include/vtk-9.3)
+
 set(BIN_OUTPUT_DIR ${VTK_DLL_DIRS}/)
 # file(COPY ${BIN_OUTPUT_DIR} DESTINATION ${CMAKE_BINARY_DIR}/BIN)
-message("VTK_INCLUDE" is ${VTK_INCLUDE})
-message("PROJECT_INCLUDE" is ${PROJECT_INCLUDE})
+message("VTK_INCLUDE is ${VTK_INCLUDE}")
+message("PROJECT_INCLUDE is ${PROJECT_INCLUDE}")
 if(NOT VTK_FOUND)
   message(FATAL_ERROR "${PROJECT_NAME}: Unable to find the VTK build folder.")
 endif()
@@ -87,8 +106,10 @@ include_directories(${VTK_INCLUDE})
 # 添加头文件和源文件
 file(GLOB_RECURSE HEADER_FILES "include/*.h")
 file(GLOB_RECURSE UI_FILES "Ui/*.h")
+file(GLOB_RECURSE P3DS_Headers "P3DS/*.h")
+file(GLOB_RECURSE P3DS_FILES "P3DS/*.cxx")
 
-source_group(include FILES ${HEADER_FILES} ${UI_FILES})
+source_group(include FILES ${HEADER_FILES} ${UI_FILES} ${P3DS_Headers})
 # 添加VTK头文件和源文件
 file(GLOB_RECURSE VTK_HEADER_FILES "${VTK_INCLUDE}/*.h")
 
@@ -113,7 +134,7 @@ target_include_directories(${PROJECT_NAME} PUBLIC $<$<CONFIG:Release>:${VTK_INCL
 
 target_link_libraries(${PROJECT_NAME} ${qt_modules})
 target_link_libraries(${PROJECT_NAME} ${VTK_LIBRARIES})
-message("VTK_LIBRARIES" is ${VTK_LIBRARIES})
+message("VTK_LIBRARIES = "  ${VTK_LIBRARIES})
 # vtk_module_autoinit is needed
 vtk_module_autoinit(
   TARGETS ${PROJECT_NAME}

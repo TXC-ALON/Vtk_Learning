@@ -21,14 +21,18 @@ public:
         ui->setupUi(this);
         setupWidget(this);
         pRotateWidget = new RotateWidget(this);
+        recent_skein_directory = "";
     }
     ~MainWindow();
 
 public:
     Ui::MainWindow *ui;
     RotateWidget *pRotateWidget;
+    QString recent_skein_directory;
+    QString recent_out_directory;
+
 private slots:
-    // void openFileSlot();
+    void openFileSlot();
     // void openPlatSelectSlot();
     // void AutoRepairSlot();
     // void MoveSlot();
@@ -37,6 +41,10 @@ private slots:
 private:
     void connectSignals(QWidget *widget);
     void setupWidget(QWidget *widget);
+
+    bool loadFile(const QString &filePath);
+    bool loadFileList(const QStringList files);
+    bool loadDirectory(const QString &dir);
 };
 
 #endif // MAINWINDOW_H

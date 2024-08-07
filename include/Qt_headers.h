@@ -7,7 +7,9 @@
 #include <QDir>
 #include <QTextStream>
 #include <QApplication>
-
+#include <QFileDialog>
+#include <QMessageBox>
+#include <QTime>
 #include <QGuiApplication>
 #include <QIcon>
 #include <QPixmap>

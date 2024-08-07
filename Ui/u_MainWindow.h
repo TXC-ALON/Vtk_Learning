@@ -32,6 +32,7 @@ public:
     QDockWidget *controlDock;
     VtkWidget3D vtkWidget;
     vtkSmartPointer<vtkSphereSource> sphere;
+    QPushButton *openFileButton;
     QPushButton *rotateButton;
 
 public:
@@ -53,7 +54,8 @@ public:
 
         QPushButton *randomizeButton = new QPushButton("Randomize", MainWindow);
         dockLayout->addWidget(randomizeButton);
-
+        openFileButton = new QPushButton("Open", MainWindow);
+        dockLayout->addWidget(openFileButton);
         rotateButton = new QPushButton("Rotate", MainWindow);
         dockLayout->addWidget(rotateButton);
 

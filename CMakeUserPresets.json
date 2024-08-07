@@ -3,17 +3,11 @@
     "configurePresets": [
         {
             "name": "x64-Windows-Config",
-            "inherits": "x64-Windows-Config-Base",
-            "environment": {
-                "VCPKG_ROOT": "D:/Dev/vcpkg"
-            }
+            "inherits": "x64-Windows-Config-Base"
         },
         {
             "name": "x86-Windows-Config",
-            "inherits": "x86-Windows-Config-Base",
-            "environment": {
-                "VCPKG_ROOT": "D:/Dev/vcpkg"
-            }
+            "inherits": "x86-Windows-Config-Base"
         }
     ],
     "buildPresets": [
