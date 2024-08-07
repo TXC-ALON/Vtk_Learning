@@ -12,8 +12,12 @@
                 "D:/Qt5/Qt5.14.2/5.14.2/msvc2017_64/include/QtCore",
                 "D:/Qt5/Qt5.14.2/5.14.2/msvc2017_64/include/QtGui",
                 "${workspaceFolder}/P3DS",
-                "${workspaceFolder}/P3DS/adMesh",
-                "${workspaceFolder}/P3DS/TriangleMesh"
+                "${workspaceFolder}/P3DS/admesh",
+                "${workspaceFolder}/P3DS/TriangleMesh",
+                "${workspaceFolder}/P3DS/print",
+                "${workspaceFolder}/P3DS/Core2D"
+
+
             ],
             "defines": [
                 "_DEBUG",

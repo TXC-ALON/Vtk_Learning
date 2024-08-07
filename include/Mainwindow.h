@@ -4,7 +4,8 @@
 #include <QMainWindow>
 #include <Vtkwidget3D.h>
 #include <Qt_headers.h>
-#include <Ui/u_MainWindow.h>
+#include <P3DS_headers.h>
+#include "../Ui/u_MainWindow.h"
 #include "RotateWidget.h"
 namespace Ui
 {
@@ -42,9 +43,9 @@ private:
     void connectSignals(QWidget *widget);
     void setupWidget(QWidget *widget);
 
-    bool loadFile(const QString &filePath);
-    bool loadFileList(const QStringList files);
-    bool loadDirectory(const QString &dir);
+    // bool loadFile(const QString &filePath);
+    // bool loadFileList(const QStringList files);
+    // bool loadDirectory(const QString &dir);
 };
 
 #endif // MAINWINDOW_H

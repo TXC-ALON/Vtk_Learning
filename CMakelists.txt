@@ -8,7 +8,24 @@ set(CMAKE_AUTOUIC ON)
 # 设置C++标准
 set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
+# 设定基本路径
+set(Dev_PREFIX "D:/Dev/")
+set(CMAKE_TOOLCHAIN_FILE "" CACHE FILEPATH "Vcpkg toolchain file")
+set(PROJECT_INCLUDE ${CMAKE_CURRENT_SOURCE_DIR}/include)
+set(P3DS_PATH "Dev_PREFIX/P3DS")
+## boost
+set(BOOST_ROOT "D:/Dev/Boost/x64")
+set(Boost_INCLUDE_DIRS "D:/Dev/Boost/x64/include/boost-1_82/boost")
+set(Boost_LIBRARY_DIR "D:/Dev/Boost/x64/lib")
+set(Boost_NO_SYSTEM_PATHS ON)
 
+## vtk
+set(VTK_INSTALL_PREFIX ${Dev_PREFIX}/VTK)
+set(VTK_DLL_DIRS ${VTK_INSTALL_PREFIX}/bin)
+set(VTK_INCLUDE ${VTK_INSTALL_PREFIX}/include/vtk-9.3)
+
+
+#find_packages
 find_package(VTK COMPONENTS 
   CommonColor
   CommonCore
@@ -36,36 +53,9 @@ find_package(VTK COMPONENTS
   RenderingQt
   
 )
-
 find_package(Qt5 COMPONENTS Widgets Core Gui REQUIRED)
-set(Dev_PREFIX "D:/Dev/")
-set(VTK_INSTALL_PREFIX ${Dev_PREFIX}/VTK)
-set(BOOST_ROOT "D:/Dev/Boost/x64")
-set(Boost_INCLUDE_DIR "D:/Dev/Boost/x64/include/boost-1_82/boost")
-set(Boost_INCLUDE_DIR "D:/Dev/Boost/x64/include")
-set(Boost_LIBRARY_DIR "D:/Dev/Boost/x64/lib")
+find_package(Boost COMPONENTS regex system REQUIRED)
 
-set(Boost_NO_SYSTEM_PATHS ON)
-set(CMAKE_TOOLCHAIN_FILE "" CACHE FILEPATH "Vcpkg toolchain file")
-
-find_package(Boost REQUIRED)
-
-# 输出 Boost 的相关信息
-message("BOOST_ROOT: ${BOOST_ROOT}")
-message("Boost version: ${Boost_VERSION}")
-message("Boost_INCLUDE_DIRS:  ${Boost_INCLUDE_DIRS}")
-message("Boost_LIBRARY_DIRS: ${Boost_LIBRARY_DIRS}")
-message("Boost_LIBRARIES: ${Boost_LIBRARIES}")
-
-message("VTK_INSTALL_PREFIX is ${VTK_INSTALL_PREFIX}")
-set(VTK_DLL_DIRS ${VTK_INSTALL_PREFIX}/bin)
-set(PROJECT_INCLUDE ${CMAKE_CURRENT_SOURCE_DIR}/include)
-set(VTK_INCLUDE ${VTK_INSTALL_PREFIX}/include/vtk-9.3)
-
-set(BIN_OUTPUT_DIR ${VTK_DLL_DIRS}/)
-# file(COPY ${BIN_OUTPUT_DIR} DESTINATION ${CMAKE_BINARY_DIR}/BIN)
-message("VTK_INCLUDE is ${VTK_INCLUDE}")
-message("PROJECT_INCLUDE is ${PROJECT_INCLUDE}")
 if(NOT VTK_FOUND)
   message(FATAL_ERROR "${PROJECT_NAME}: Unable to find the VTK build folder.")
 endif()
@@ -83,33 +73,23 @@ if(${VTK_QT_VERSION} VERSION_GREATER_EQUAL 6)
   list(APPEND qt_components OpenGLWidgets)
 endif()
 list(SORT qt_components)
-# We have ui files, so this will also bring in the macro:
-#   qt5_wrap_ui or qt_wrap_ui from Widgets.
+
 find_package(Qt${VTK_QT_VERSION}
   REQUIRED COMPONENTS ${qt_components}
 )
 
 foreach(_qt_comp IN LISTS qt_components)
-  list(APPEND qt_modules "Qt${VTK_QT_VERSION}::${_qt_comp}")
+  list(APPEND QT_MODULES "Qt${VTK_QT_VERSION}::${_qt_comp}")
 endforeach()
 
-message (STATUS "VTK_VERSION: ${VTK_VERSION}, Qt Version: ${Qt${VTK_QT_VERSION}Widgets_VERSION}")
+message (STATUS "
+-- VTK_VERSION: ${VTK_VERSION}
+-- Qt Version: ${Qt${VTK_QT_VERSION}Widgets_VERSION}
+-- Boost Version: ${Boost_VERSION}
+")
 
-
-
-include_directories(${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR})
-message("CMAKE_CURRENT_SOURCE_DIR is ${CMAKE_CURRENT_SOURCE_DIR}")
-message("CMAKE_CURRENT_BINARY_DIR is ${CMAKE_CURRENT_BINARY_DIR}")
-# 包含头文件目录
-include_directories(${PROJECT_INCLUDE})
-include_directories(${VTK_INCLUDE})
 # 添加头文件和源文件
-file(GLOB_RECURSE HEADER_FILES "include/*.h")
-file(GLOB_RECURSE UI_FILES "Ui/*.h")
-file(GLOB_RECURSE P3DS_Headers "P3DS/*.h")
-file(GLOB_RECURSE P3DS_FILES "P3DS/*.cxx")
-
-source_group(include FILES ${HEADER_FILES} ${UI_FILES} ${P3DS_Headers})
+file(GLOB_RECURSE HEADER_FILES "include/*")
 # 添加VTK头文件和源文件
 file(GLOB_RECURSE VTK_HEADER_FILES "${VTK_INCLUDE}/*.h")
 
@@ -119,24 +99,17 @@ aux_source_directory(${SOURCE_DIR} SOURCE_FILES)
 # 设置可执行文件输出目录
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/bin)
 
-file(GLOB UI_FILES *.ui)
-file(GLOB QT_WRAP *.h)
-file(GLOB CXX_FILES *.cxx)
-
 # 项目名称
-add_executable(${PROJECT_NAME} MACOSX_BUNDLE ${CXX_FILES} ${UISrcs} ${QT_WRAP} ${SOURCE_FILES} ${HEADER_FILES})
-target_include_directories(${PROJECT_NAME} PUBLIC $<$<CONFIG:Debug>:${INCLUDE}>)
-target_include_directories(${PROJECT_NAME} PUBLIC $<$<CONFIG:Release>:${INCLUDE}>)
+add_executable(${PROJECT_NAME} ${SOURCE_FILES} ${HEADER_FILES})
 target_include_directories(${PROJECT_NAME} PUBLIC $<$<CONFIG:Debug>:${PROJECT_INCLUDE}>)
 target_include_directories(${PROJECT_NAME} PUBLIC $<$<CONFIG:Release>:${PROJECT_INCLUDE}>)
-target_include_directories(${PROJECT_NAME} PUBLIC $<$<CONFIG:Debug>:${VTK_INCLUDE}>)
-target_include_directories(${PROJECT_NAME} PUBLIC $<$<CONFIG:Release>:${VTK_INCLUDE}>)
 
-target_link_libraries(${PROJECT_NAME} ${qt_modules})
+
+target_link_libraries(${PROJECT_NAME} ${QT_MODULES})
 target_link_libraries(${PROJECT_NAME} ${VTK_LIBRARIES})
-message("VTK_LIBRARIES = "  ${VTK_LIBRARIES})
-# vtk_module_autoinit is needed
-vtk_module_autoinit(
-  TARGETS ${PROJECT_NAME}
-  MODULES ${VTK_LIBRARIES}
-)
+
+# # vtk_module_autoinit is needed
+# vtk_module_autoinit(
+#   TARGETS ${PROJECT_NAME}
+#   MODULES ${VTK_LIBRARIES}
+# )
