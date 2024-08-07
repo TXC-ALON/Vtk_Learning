@@ -9,10 +9,20 @@ set(CMAKE_AUTOUIC ON)
 set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 # 设定基本路径
-set(Dev_PREFIX "D:/Dev/")
+set(Dev_PREFIX "D:/Dev")
 set(CMAKE_TOOLCHAIN_FILE "" CACHE FILEPATH "Vcpkg toolchain file")
 set(PROJECT_INCLUDE ${CMAKE_CURRENT_SOURCE_DIR}/include)
-set(P3DS_PATH "Dev_PREFIX/P3DS")
+set(EIGEN_PATH "${Dev_PREFIX}/Eigen")
+set(EIGEN_MACROS_H_PATH "${EIGEN_PATH}/Eigen/src/Core/util/Macros.h")
+# 从Macros.h中读取版本号
+file(STRINGS "${EIGEN_MACROS_H_PATH}" eigen_version_lines REGEX "#define EIGEN_[A-Z]+_VERSION")
+# 正则表达式匹配版本号
+string(REGEX REPLACE ".*#define EIGEN_WORLD_VERSION ([0-9]+).*" "\\1" eigen_world_version "${eigen_version_lines}")
+string(REGEX REPLACE ".*#define EIGEN_MAJOR_VERSION ([0-9]+).*" "\\1" eigen_major_version "${eigen_version_lines}")
+string(REGEX REPLACE ".*#define EIGEN_MINOR_VERSION ([0-9]+).*" "\\1" eigen_minor_version "${eigen_version_lines}")
+# 连接版本号
+set(eigen_version " ${eigen_world_version}.${eigen_major_version}.${eigen_minor_version}")
+
 ## boost
 set(BOOST_ROOT "D:/Dev/Boost/x64")
 set(Boost_INCLUDE_DIRS "D:/Dev/Boost/x64/include/boost-1_82/boost")
@@ -23,7 +33,6 @@ set(Boost_NO_SYSTEM_PATHS ON)
 set(VTK_INSTALL_PREFIX ${Dev_PREFIX}/VTK)
 set(VTK_DLL_DIRS ${VTK_INSTALL_PREFIX}/bin)
 set(VTK_INCLUDE ${VTK_INSTALL_PREFIX}/include/vtk-9.3)
-
 
 #find_packages
 find_package(VTK COMPONENTS 
@@ -54,10 +63,10 @@ find_package(VTK COMPONENTS
   
 )
 find_package(Qt5 COMPONENTS Widgets Core Gui REQUIRED)
-find_package(Boost COMPONENTS regex system REQUIRED)
+find_package(Boost REQUIRED COMPONENTS system filesystem)
 
 if(NOT VTK_FOUND)
-  message(FATAL_ERROR "${PROJECT_NAME}: Unable to find the VTK build folder.")
+  message(FATAL_ERROR " ${PROJECT_NAME}:  Unable to find the VTK build folder.")
 endif()
 
 if(NOT(TARGET VTK::GUISupportQt))
@@ -82,10 +91,10 @@ foreach(_qt_comp IN LISTS qt_components)
   list(APPEND QT_MODULES "Qt${VTK_QT_VERSION}::${_qt_comp}")
 endforeach()
 
-message (STATUS "
--- VTK_VERSION: ${VTK_VERSION}
+message (STATUS "VTK_VERSION: ${VTK_VERSION}
 -- Qt Version: ${Qt${VTK_QT_VERSION}Widgets_VERSION}
 -- Boost Version: ${Boost_VERSION}
+-- Eigen version: ${eigen_version}
 ")
 
 # 添加头文件和源文件
@@ -93,21 +102,33 @@ file(GLOB_RECURSE HEADER_FILES "include/*")
 # 添加VTK头文件和源文件
 file(GLOB_RECURSE VTK_HEADER_FILES "${VTK_INCLUDE}/*.h")
 
-source_group("VTK_INCLUDE" FILES ${VTK_HEADER_FILES})
 set(SOURCE_DIR src)
 aux_source_directory(${SOURCE_DIR} SOURCE_FILES)
 # 设置可执行文件输出目录
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/bin)
+message("VTK_INCLUDE is ${VTK_INCLUDE}")
 
+
+set(ADMESH ${CMAKE_CURRENT_SOURCE_DIR}/P3DS/admesh)
+message("ADMESH is ${ADMESH}")
+file(GLOB_RECURSE ADMESH_FILES ${ADMESH}/*)
+foreach(item IN LISTS ADMESH_FILES)
+    message(STATUS " ADMESH_FILES item: ${item}")
+endforeach()
+
+message(STATUS " EIGEN_PATH : ${EIGEN_PATH}")
 # 项目名称
-add_executable(${PROJECT_NAME} ${SOURCE_FILES} ${HEADER_FILES})
-target_include_directories(${PROJECT_NAME} PUBLIC $<$<CONFIG:Debug>:${PROJECT_INCLUDE}>)
-target_include_directories(${PROJECT_NAME} PUBLIC $<$<CONFIG:Release>:${PROJECT_INCLUDE}>)
-
+add_executable(${PROJECT_NAME} ${SOURCE_FILES} ${HEADER_FILES} ${ADMESH_FILES})
+target_include_directories(${PROJECT_NAME} PUBLIC ${PROJECT_INCLUDE})
+target_include_directories(${PROJECT_NAME} PUBLIC ${Boost_INCLUDE_DIRS})
+target_include_directories(${PROJECT_NAME} PUBLIC ${VTK_INCLUDE})
+target_include_directories(${PROJECT_NAME} PUBLIC ${ADMESH})
+## 直接包含编译
+target_include_directories(${PROJECT_NAME} PUBLIC ${EIGEN_PATH})
 
 target_link_libraries(${PROJECT_NAME} ${QT_MODULES})
 target_link_libraries(${PROJECT_NAME} ${VTK_LIBRARIES})
-
+target_link_libraries(${PROJECT_NAME} ${Boost_LIBRARIES})
 # # vtk_module_autoinit is needed
 # vtk_module_autoinit(
 #   TARGETS ${PROJECT_NAME}

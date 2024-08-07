@@ -15,13 +15,14 @@
 #include <random>
 #include <vtkProperty.h>
 #include "Mainwindow.h"
+#include <Eigen/Dense>
 class SMainWindow : public QMainWindow
 {
 public:
     SMainWindow(QWidget *parent = nullptr) : QMainWindow(parent)
     {
         setupUI();
-        }
+    }
 
 private:
     QDockWidget *controlDock;
@@ -94,6 +95,10 @@ private:
 
 int main(int argc, char *argv[])
 {
+    std::cout << "Eigen version: "
+              << EIGEN_WORLD_VERSION << "."
+              << EIGEN_MAJOR_VERSION << "."
+              << EIGEN_MINOR_VERSION << std::endl;
     QApplication app(argc, argv);
     MainWindow mainWindow;
     mainWindow.show();
