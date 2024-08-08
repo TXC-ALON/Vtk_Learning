@@ -141,5 +141,5 @@ void RotateWidget::applySlot()
 		// TODO 获取支架自动调整开关状态，调整VTK中的支架模型
 	}
 
-	ui->pushButtonOK->setEnabled(false);
+	ui->pushButtonOK->setEnabled(true);
 }

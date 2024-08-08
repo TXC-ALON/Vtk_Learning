@@ -42,9 +42,6 @@ public:
         vtkMatrix4x4 *martix = prop->GetUserMatrix();
         if (m_matrix != nullptr && nullptr != martix)
         {
-            std::cout << "m_matrix is \n"
-                      << *m_matrix << std::endl;
-
             vtkMatrix4x4::Multiply4x4(m_matrix, martix, m_matrix);
         }
         else

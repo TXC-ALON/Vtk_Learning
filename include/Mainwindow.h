@@ -34,6 +34,7 @@ public:
 
 private slots:
     void openFileSlot();
+    void ShowAxes();
     // void openPlatSelectSlot();
     // void AutoRepairSlot();
     // void MoveSlot();

@@ -13,7 +13,7 @@
 #include <cmath>
 #include <cstdlib>
 #include <random>
-
+#include <VTKDataManager.h>
 MainWindow::~MainWindow()
 {
     if (pRotateWidget != nullptr)
@@ -22,10 +22,60 @@ MainWindow::~MainWindow()
         pRotateWidget = nullptr;
     }
 }
-
+void MainWindow::ShowAxes()
+{
+    if (!ui->rotateWidget->GetEnabled())
+    {
+        std::cout << "to enable" << std::endl;
+        vtkSmartPointer<vtkActor> actor = VTKDataManager::getInstance()->ObjectActorMap[1];
+        ui->rotateWidget->SetInteractor(ui->vtkWidget->interactor());
+        ui->rotateWidget->SetCurrentRenderer(ui->vtkWidget->m_renderer);
+        ui->rotateWidget->CreateDefaultRepresentation();
+        ui->rotateWidget->GetRepresentation()->SetPlaceFactor(1);
+        ui->rotateWidget->GetRepresentation()->PlaceWidget(actor->GetBounds());
+        ui->callback->SetProp3D(actor);
+        ui->rotateWidget->AddObserver(vtkCommand::StartInteractionEvent, ui->callback, 1.0);
+        ui->rotateWidget->AddObserver(vtkCommand::InteractionEvent, ui->callback, 1.0);
+        ui->rotateWidget->AddObserver(vtkCommand::EndInteractionEvent, ui->callback, 1.0);
+        ui->rotateWidget->EnabledOn();
+    }
+    else
+    {
+        std::cout << "close" << std::endl;
+        ui->rotateWidget->EnabledOff();
+    }
+}
 void MainWindow::openFileSlot()
 {
     std::cout << "openFileSlot" << std::endl;
+
+    vtkSmartPointer<vtkSphereSource> sphere;
+    vtkSmartPointer<vtkCylinderSource> cylinder;
+    vtkSmartPointer<vtkDataSetMapper> mapper;
+    vtkSmartPointer<vtkActor> actor;
+    sphere = vtkSmartPointer<vtkSphereSource>::New();
+    cylinder = vtkSmartPointer<vtkCylinderSource>::New();
+    cylinder->SetCenter(0.0, 0.0, 0.0);
+    cylinder->SetRadius(5.0);
+    cylinder->SetHeight(2.0);
+    cylinder->SetResolution(100);
+    // vtkSmartPointer<vtkSphereSource> sphere = vtkSmartPointer<vtkSphereSource>::New();
+    sphere->SetRadius(1.0);
+    sphere->SetThetaResolution(100);
+    sphere->SetPhiResolution(100);
+    sphere->Update();
+
+    vtkSmartPointer<vtkDataSetMapper> sphere_mapper = vtkSmartPointer<vtkDataSetMapper>::New();
+    vtkSmartPointer<vtkDataSetMapper> cylinder_mapper = vtkSmartPointer<vtkDataSetMapper>::New();
+
+    sphere_mapper->SetInputConnection(sphere->GetOutputPort());
+    cylinder_mapper->SetInputConnection(cylinder->GetOutputPort());
+    actor = vtkSmartPointer<vtkActor>::New();
+    actor->SetMapper(cylinder_mapper);
+    actor->GetProperty()->SetEdgeVisibility(true);
+    actor->GetProperty()->SetRepresentationToSurface();
+    VTKDataManager::getInstance()->ObjectActorMap.insert(1, actor);
+    ui->vtkWidget->m_renderer->AddActor(actor);
 }
 void MainWindow::RotateSlot()
 {
@@ -39,6 +89,7 @@ void MainWindow::connectSignals(QWidget *widget)
     // setAcceptDrops(true);
     connect(ui->rotateButton, &QPushButton::clicked, this, &MainWindow::RotateSlot);
     connect(ui->openFileButton, &QPushButton::clicked, this, &MainWindow::openFileSlot);
+    connect(ui->ShowAxesButton, &QPushButton::clicked, this, &MainWindow::ShowAxes);
 }
 
 void MainWindow::setupWidget(QWidget *widget)

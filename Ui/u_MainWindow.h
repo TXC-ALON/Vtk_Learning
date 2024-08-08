@@ -99,23 +99,22 @@ class Ui_MainWindow
 public:
     Ui_MainWindow()
     {
-        sphere = vtkSmartPointer<vtkSphereSource>::New();
-        cylinder = vtkSmartPointer<vtkCylinderSource>::New();
+        this->rotateWidget = ThreeDAxesWidget::New();
+        this->rotateWidget->EnabledOff();
+        this->callback = ThreeDAxesCallback::New();
     }
     QDockWidget *controlDock;
     QWidget *centralWidget;
     VtkWidget3D *vtkWidget;
-    vtkSmartPointer<vtkSphereSource> sphere;
-    vtkSmartPointer<vtkCylinderSource> cylinder;
     QPushButton *openFileButton;
     QPushButton *rotateButton;
+    QPushButton *ShowAxesButton;
+
     vtkSmartPointer<vtkAxesActor> Axes;
     vtkSmartPointer<vtkOrientationMarkerWidget> widget;
     vtkSmartPointer<XKeyPressCallback> keycallback;
     vtkSmartPointer<vtkRenderWindowInteractor> renderWindowInteractor;
-    vtkSmartPointer<vtkActor> actor;
-    vtkSmartPointer<vtkDataSetMapper> mapper;
-    ThreeDAxesCallback *callback;
+    ThreeDAxesCallback *callback = nullptr;
     ThreeDAxesWidget *rotateWidget;
 
 public:
@@ -141,6 +140,9 @@ public:
         dockLayout->addWidget(openFileButton);
         rotateButton = new QPushButton("Rotate", MainWindow);
         dockLayout->addWidget(rotateButton);
+        ShowAxesButton = new QPushButton("ShowAxes", MainWindow);
+        dockLayout->addWidget(ShowAxesButton);
+
         centralWidget = new QWidget(MainWindow);
         centralWidget->setObjectName(QString::fromUtf8("centralWidget"));
         // Vtk
@@ -150,42 +152,14 @@ public:
         vtkWidget->setMinimumSize(QSize(1200, 900));
 
         MainWindow->setCentralWidget(centralWidget);
-        // 交互器
-        // vtkWidget.renderWindowInteractor = vtkSmartPointer<vtkGenericRenderWindowInteractor>::New();
 
-        // vtkWidget.renderWindowInteractor->SetRenderWindow(vtkWidget.window);
-        // vtkNew<XKeyPressCallback> keycallback;
-        // keycallback->renderer = vtkWidget.renderer;
-        // keycallback->window = vtkWidget.window;
-        // vtkWidget.renderWindowInteractor->AddObserver(vtkCommand::KeyPressEvent, keycallback);
+        vtkNew<vtkInteractorStyleTrackballCamera> interactorStyle;
+        vtkWidget->interactor()->SetInteractorStyle(interactorStyle);
+        vtkNew<XKeyPressCallback> keycallback;
+        keycallback->renderer = vtkWidget->m_renderer;
+        keycallback->window = vtkWidget->m_renderWindow;
+        vtkWidget->interactor()->AddObserver(vtkCommand::KeyPressEvent, keycallback);
 
-        // vtkNew<vtkInteractorStyleTrackballCamera> style;
-        // vtkWidget.renderWindowInteractor->SetInteractorStyle(style);
-
-        // 模型
-
-        cylinder->SetCenter(0.0, 0.0, 0.0);
-        cylinder->SetRadius(5.0);
-        cylinder->SetHeight(2.0);
-        cylinder->SetResolution(100);
-        // vtkSmartPointer<vtkSphereSource> sphere = vtkSmartPointer<vtkSphereSource>::New();
-        sphere->SetRadius(1.0);
-        sphere->SetThetaResolution(100);
-        sphere->SetPhiResolution(100);
-        sphere->Update();
-        vtkSmartPointer<vtkDataSetMapper> sphere_mapper = vtkSmartPointer<vtkDataSetMapper>::New();
-        vtkSmartPointer<vtkDataSetMapper> cylinder_mapper = vtkSmartPointer<vtkDataSetMapper>::New();
-
-        sphere_mapper->SetInputConnection(sphere->GetOutputPort());
-        cylinder_mapper->SetInputConnection(cylinder->GetOutputPort());
-        // mapper = cylinder_mapper;
-        actor = vtkSmartPointer<vtkActor>::New();
-        actor->SetMapper(cylinder_mapper);
-        actor->GetProperty()->SetEdgeVisibility(true);
-        actor->GetProperty()->SetRepresentationToSurface();
-        vtkWidget->m_renderer->AddActor(actor);
-
-        // this->vtkWidget->m_renderWindow->AddRenderer(vtkWidget->m_renderer);
         vtkNew<vtkAxes> modelAxesSource;
         modelAxesSource->SetScaleFactor(20);
         modelAxesSource->SetOrigin(0, 0, 0);
@@ -195,32 +169,10 @@ public:
         modelAxes->SetMapper(modelAxesMapper);
         vtkWidget->m_renderer->AddActor(modelAxes);
 
-        vtkNew<vtkInteractorStyleTrackballCamera> interactorStyle;
-        vtkWidget->interactor()->SetInteractorStyle(interactorStyle);
-
-        vtkNew<XKeyPressCallback> keycallback;
-        keycallback->renderer = vtkWidget->m_renderer;
-        keycallback->window = vtkWidget->m_renderWindow;
-        vtkWidget->interactor()->AddObserver(vtkCommand::KeyPressEvent, keycallback);
-
-        callback = ThreeDAxesCallback::New();
-        // rotateWidget->SetPriority(1.0); // 更高的优先级
-        //  创建旋转控件
-        rotateWidget = ThreeDAxesWidget::New();
-        rotateWidget->SetInteractor(vtkWidget->interactor());
-        rotateWidget->SetCurrentRenderer(vtkWidget->m_renderer);
-        rotateWidget->CreateDefaultRepresentation();
-        rotateWidget->GetRepresentation()->SetPlaceFactor(1);
-        rotateWidget->GetRepresentation()->PlaceWidget(actor->GetBounds());
-        callback->SetProp3D(actor);
-        rotateWidget->AddObserver(vtkCommand::StartInteractionEvent, callback, 1.0);
-        rotateWidget->AddObserver(vtkCommand::InteractionEvent, callback, 1.0);
-        rotateWidget->AddObserver(vtkCommand::EndInteractionEvent, callback, 1.0);
-
         // vtkNew<ssCallback> callbackss;
         // vtkWidget->interactor()->AddObserver(vtkCommand::AnyEvent, callbackss);
         // // 启用旋转控件
-        rotateWidget->EnabledOn();
+
         // vtkWidget->interactor()->Initialize();
         // vtkWidget->interactor()->Start();
 
