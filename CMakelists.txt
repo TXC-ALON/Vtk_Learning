@@ -21,7 +21,7 @@ string(REGEX REPLACE ".*#define EIGEN_WORLD_VERSION ([0-9]+).*" "\\1" eigen_worl
 string(REGEX REPLACE ".*#define EIGEN_MAJOR_VERSION ([0-9]+).*" "\\1" eigen_major_version "${eigen_version_lines}")
 string(REGEX REPLACE ".*#define EIGEN_MINOR_VERSION ([0-9]+).*" "\\1" eigen_minor_version "${eigen_version_lines}")
 # 连接版本号
-set(eigen_version " ${eigen_world_version}.${eigen_major_version}.${eigen_minor_version}")
+set(eigen_version "${eigen_world_version}.${eigen_major_version}.${eigen_minor_version}")
 
 ## boost
 set(BOOST_ROOT "D:/Dev/Boost/x64")
@@ -63,7 +63,7 @@ find_package(VTK COMPONENTS
   
 )
 find_package(Qt5 COMPONENTS Widgets Core Gui REQUIRED)
-find_package(Boost REQUIRED COMPONENTS system filesystem)
+find_package(Boost REQUIRED COMPONENTS system filesystem thread)
 
 if(NOT VTK_FOUND)
   message(FATAL_ERROR " ${PROJECT_NAME}:  Unable to find the VTK build folder.")
@@ -91,10 +91,10 @@ foreach(_qt_comp IN LISTS qt_components)
   list(APPEND QT_MODULES "Qt${VTK_QT_VERSION}::${_qt_comp}")
 endforeach()
 
-message (STATUS "VTK_VERSION: ${VTK_VERSION}
--- Qt Version: ${Qt${VTK_QT_VERSION}Widgets_VERSION}
--- Boost Version: ${Boost_VERSION}
+message (STATUS "Boost Version: ${Boost_VERSION}
 -- Eigen version: ${eigen_version}
+-- Qt Version: ${Qt${VTK_QT_VERSION}Widgets_VERSION}
+-- VTK_VERSION: ${VTK_VERSION}
 ")
 
 # 添加头文件和源文件
@@ -107,6 +107,10 @@ aux_source_directory(${SOURCE_DIR} SOURCE_FILES)
 # 设置可执行文件输出目录
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/bin)
 message("VTK_INCLUDE is ${VTK_INCLUDE}")
+message("${Boost_LIBRARIES}")
+foreach(item IN LISTS ${Boost_LIBRARIES})
+    message(STATUS " Boost_LIBRARIES item: ${item}")
+endforeach()
 
 
 set(ADMESH ${CMAKE_CURRENT_SOURCE_DIR}/P3DS/admesh)
@@ -115,8 +119,6 @@ file(GLOB_RECURSE ADMESH_FILES ${ADMESH}/*)
 foreach(item IN LISTS ADMESH_FILES)
     message(STATUS " ADMESH_FILES item: ${item}")
 endforeach()
-
-message(STATUS " EIGEN_PATH : ${EIGEN_PATH}")
 # 项目名称
 add_executable(${PROJECT_NAME} ${SOURCE_FILES} ${HEADER_FILES} ${ADMESH_FILES})
 target_include_directories(${PROJECT_NAME} PUBLIC ${PROJECT_INCLUDE})
@@ -129,6 +131,8 @@ target_include_directories(${PROJECT_NAME} PUBLIC ${EIGEN_PATH})
 target_link_libraries(${PROJECT_NAME} ${QT_MODULES})
 target_link_libraries(${PROJECT_NAME} ${VTK_LIBRARIES})
 target_link_libraries(${PROJECT_NAME} ${Boost_LIBRARIES})
+
+
 # # vtk_module_autoinit is needed
 # vtk_module_autoinit(
 #   TARGETS ${PROJECT_NAME}

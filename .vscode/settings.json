@@ -81,6 +81,7 @@
         "xtr1common": "cpp",
         "xtree": "cpp",
         "xutility": "cpp",
-        "*.txx": "cpp"
+        "*.txx": "cpp",
+        "queue": "cpp"
     }
 }

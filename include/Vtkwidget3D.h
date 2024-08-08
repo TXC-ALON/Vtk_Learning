@@ -13,9 +13,8 @@ public:
     ~VtkWidget3D();
 
 public:
-    QVTKOpenGLNativeWidget *p_vtkWidget;
+    QVTKOpenGLNativeWidget* p_vtkWidget;
     vtkSmartPointer<vtkRenderer> renderer;
-    vtkSmartPointer<vtkRenderWindow> renderWindow;
     vtkSmartPointer<vtkGenericOpenGLRenderWindow> window;
     vtkSmartPointer<vtkRenderWindowInteractor> renderWindowInteractor;
 };

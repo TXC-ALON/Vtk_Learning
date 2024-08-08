@@ -16,85 +16,16 @@
 #include <vtkProperty.h>
 #include "Mainwindow.h"
 #include <Eigen/Dense>
-class SMainWindow : public QMainWindow
-{
-public:
-    SMainWindow(QWidget *parent = nullptr) : QMainWindow(parent)
-    {
-        setupUI();
-    }
-
-private:
-    QDockWidget *controlDock;
-
-    void setupUI()
-    {
-        QSurfaceFormat::setDefaultFormat(QVTKOpenGLNativeWidget::defaultFormat());
-
-        // Main window setup
-        resize(1200, 900);
-
-        // Control area setup
-        controlDock = new QDockWidget(this);
-        addDockWidget(Qt::LeftDockWidgetArea, controlDock);
-
-        QLabel *controlDockTitle = new QLabel("Control Dock", this);
-        controlDockTitle->setMargin(20);
-        controlDock->setTitleBarWidget(controlDockTitle);
-
-        QVBoxLayout *dockLayout = new QVBoxLayout();
-        QWidget *layoutContainer = new QWidget(this);
-        layoutContainer->setLayout(dockLayout);
-        controlDock->setWidget(layoutContainer);
-
-        QPushButton *randomizeButton = new QPushButton("Randomize", this);
-        dockLayout->addWidget(randomizeButton);
-
-        // Connect the button to the randomize function
-        QObject::connect(randomizeButton, &QPushButton::released,
-                         this, &SMainWindow::randomize);
-
-        // Render area setup
-        QVTKOpenGLNativeWidget *vtkRenderWidget = new QVTKOpenGLNativeWidget(this);
-        setCentralWidget(vtkRenderWidget);
-
-        // VTK setup
-        vtkNew<vtkGenericOpenGLRenderWindow> window;
-        vtkRenderWidget->setRenderWindow(window.Get());
-
-        vtkNew<vtkSphereSource> sphere;
-        sphere->SetRadius(1.0);
-        sphere->SetThetaResolution(100);
-        sphere->SetPhiResolution(100);
-
-        vtkNew<vtkDataSetMapper> mapper;
-        mapper->SetInputConnection(sphere->GetOutputPort());
-
-        vtkNew<vtkActor> actor;
-        actor->SetMapper(mapper);
-        actor->GetProperty()->SetEdgeVisibility(true);
-        actor->GetProperty()->SetRepresentationToSurface();
-
-        vtkNew<vtkRenderer> renderer;
-        renderer->SetBackground(0.733, 0.871, 0.984);
-        renderer->AddActor(actor);
-
-        window->AddRenderer(renderer);
-
-        // Setup initial status
-        std::mt19937 randEng(0);
-        randomize();
-    }
-
-    void randomize()
-    {
-        // Randomize the sphere, mapper, and renderer here
-        // Placeholder for randomization logic
-    }
-};
+#include <stl.h>
 
 int main(int argc, char *argv[])
 {
+    stl_vertex test;
+    test.x = 1;
+    test.y = 1.8;
+    test.z = 1.999;
+    test.stl_scale(2);
+    std::cout << test.x << std::endl;
     std::cout << "Eigen version: "
               << EIGEN_WORLD_VERSION << "."
               << EIGEN_MAJOR_VERSION << "."

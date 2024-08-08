@@ -75,32 +75,29 @@ typedef double coordf_t;
 
 /* Implementation of CONFESS("foo"): */
 #ifdef _MSC_VER
-#define CONFESS(...) confess_at(__FILE__, __LINE__, __FUNCTION__, __VA_ARGS__)
-#define LOGINFO(...) loginfo_at(__FILE__, __LINE__, __FUNCTION__, __VA_ARGS__)
+#define CONFESS(...) ;
+#define LOGINFO(...) ;
 #else
 #define CONFESS(...) confess_at(__FILE__, __LINE__, __func__, __VA_ARGS__)
 #define LOGINFO(...) loginfo_at(__FILE__, __LINE__, __func__, __VA_ARGS__)
 #endif
 
-void confess_at(const char *file, int line, const char *func, const char *pat, ...);
-void loginfo_at(const char *file, int line, const char *func, const char *pat, ...);
-
 #define SLIC3R_VERSION GetSoftVersion().c_str()
-std::string GetSoftVersion();
-int GetMajorVison();
-int GetMinorVison();
-/* End implementation of CONFESS("foo"): */
-int CodeConvert(const char *pFromCode, const char *pToCode, const char *pInBuf, size_t *iInLen, char *pOutBuf, size_t *iOutLen);
-int Encode_String(std::string &FilePath);
-int Decode_String(std::string &FilePath);
-std::wstring Utf8ToUnicode(const std::string &strUTF8);
-std::string UnicodeToUtf8(const std::wstring &strUnicode);
-std::wstring StringToWString(const std::string &str);
-std::string WStringToString(const std::wstring &wstr);
-std::string ConverToHexString(std::string &_str);
-std::wstring ConverToHexWString(std::wstring &_str);
-// 获取系统运行路径
-std::string GetRunPath();
+// std::string GetSoftVersion();
+// int GetMajorVison();
+// int GetMinorVison();
+// /* End implementation of CONFESS("foo"): */
+// int CodeConvert(const char *pFromCode, const char *pToCode, const char *pInBuf, size_t *iInLen, char *pOutBuf, size_t *iOutLen);
+// int Encode_String(std::string &FilePath);
+// int Decode_String(std::string &FilePath);
+// std::wstring Utf8ToUnicode(const std::string &strUTF8);
+// std::string UnicodeToUtf8(const std::wstring &strUnicode);
+// std::wstring StringToWString(const std::string &str);
+// std::string WStringToString(const std::wstring &wstr);
+// std::string ConverToHexString(std::string &_str);
+// std::wstring ConverToHexWString(std::wstring &_str);
+// // 获取系统运行路径
+// std::string GetRunPath();
 
 //
 // void Log_ProcessMemory(std::string _info);
@@ -186,10 +183,10 @@ namespace Slic3r
     }
 
     //
-    void Turn_On_Log();
-    void Turn_Off_Log();
-    void Init_Special_CyMesh();
-    void Init_CmMesh();
+    // void Turn_On_Log();
+    // void Turn_Off_Log();
+    // void Init_Special_CyMesh();
+    // void Init_CmMesh();
 } // namespace Slic3r
 
 using namespace Slic3r;
