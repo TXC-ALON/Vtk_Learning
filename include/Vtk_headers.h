@@ -10,6 +10,7 @@
 #include <vtkRenderWindow.h>
 #include <vtkRenderWindowInteractor.h>
 #include <vtkInteractorStyleTrackballCamera.h>
+#include <vtkGenericRenderWindowInteractor.h>
 #include <vtkObjectFactory.h>
 #include <vtkProperty.h>
 #include <vtkAxesActor.h>

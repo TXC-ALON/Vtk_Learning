@@ -81,6 +81,21 @@
         "xtr1common": "cpp",
         "xtree": "cpp",
         "xutility": "cpp",
-        "*.txx": "cpp"
-    }
+        "*.txx": "cpp",
+        "queue": "cpp",
+        "cfenv": "cpp",
+        "complex": "cpp",
+        "condition_variable": "cpp",
+        "csignal": "cpp",
+        "cwctype": "cpp",
+        "deque": "cpp",
+        "future": "cpp",
+        "shared_mutex": "cpp",
+        "source_location": "cpp",
+        "strstream": "cpp",
+        "typeindex": "cpp",
+        "unordered_set": "cpp",
+        "valarray": "cpp"
+    },
+    "workbench.editor.wrapTabs": true
 }
