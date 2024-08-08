@@ -206,7 +206,7 @@ protected:
     double StartEventOrientation[4];
 
     // glyphs representing hot spots (e.g., handles)
-    vtkActor *Handle; // ï¿½ï¿½Ç°Ñ¡ï¿½ï¿½
+    vtkActor *Handle; // ??????
     vtkPolyDataMapper *HandleMapper;
     vtkSphereSource *HandleGeometry;
 
@@ -225,13 +225,13 @@ protected:
 
     // Arrow
     double ArrowLength;
-    vtkActor **ArrowActor; // ï¿½ï¿½Í·
+    vtkActor **ArrowActor; // ???
     vtkPolyDataMapper **ArrowMapper;
     vtkPolyData **ArrowGeometry;
 
     // circle
     double CircleRadius;
-    vtkActor **CircleActor; // Ô²ï¿½ï¿½
+    vtkActor **CircleActor; // ???
     vtkPolyDataMapper **CircleMapper;
     vtkRegularPolygonSource **CircleGeometry;
 
@@ -239,19 +239,19 @@ protected:
     vtkCellArray *HCircleCellArray;
     vtkPolyData *HCircle;
     vtkPolyDataMapper *HCircleMapper;
-    vtkActor *HCircleActor; // ï¿½ï¿½ï¿½ï¿½Ô²ï¿½ï¿½
+    vtkActor *HCircleActor; // ???????
 
     vtkPoints *HCircleAreaPoints;
     vtkCellArray *HCircleAreaCellArray;
     vtkPolyData *HCircleArea;
     vtkPolyDataMapper *HCircleAreaMapper;
-    vtkActor *HCircleAreaActor; // ï¿½ï¿½ï¿½ï¿½Ô²ï¿½ï¿½ï¿½ï¿½ï¿½
+    vtkActor *HCircleAreaActor; // ??????????
 
     vtkVectorText *TextInput;
     vtkPolyDataMapper *TextMapper;
-    vtkFollower *TextActor; // æ–‡å­—
+    vtkFollower *TextActor; // ÎÄ×Ö
 
-    // åæ ‡è½´
+    // ×ø±êÖá
     int TranslationAxis;
     double XDirection[3];
     double YDirection[3];

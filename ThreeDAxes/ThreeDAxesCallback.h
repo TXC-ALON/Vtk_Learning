@@ -23,7 +23,10 @@
 class ThreeDAxesCallback : public vtkCommand
 {
 public:
-    static ThreeDAxesCallback *New() { return new ThreeDAxesCallback; }
+    static ThreeDAxesCallback *New()
+    {
+        return new ThreeDAxesCallback;
+    }
     void SetDefaultMatrix(vtkMatrix4x4 *matrix)
     {
         if (m_matrix != nullptr)
@@ -35,10 +38,19 @@ public:
     void SetProp3D(vtkSmartPointer<vtkProp3D> prop)
     {
         m_prop3D = prop;
+
         vtkMatrix4x4 *martix = prop->GetUserMatrix();
         if (m_matrix != nullptr && nullptr != martix)
         {
+            std::cout << "m_matrix is \n"
+                      << *m_matrix << std::endl;
+
             vtkMatrix4x4::Multiply4x4(m_matrix, martix, m_matrix);
+        }
+        else
+        {
+            vtkMatrix4x4 *m = vtkMatrix4x4::New();
+            prop->SetUserMatrix(m);
         }
     }
     void SetFollowActors(std::vector<vtkActor *> actors)
@@ -53,14 +65,12 @@ public:
     vtkSmartPointer<vtkPolyData> m_polyData;
     void SetPolyData(vtkSmartPointer<vtkPolyData> polydata) { m_polyData = polydata; }
     vtkPolyData *GetPolyData() { return m_polyData; }
-    virtual void Execute(vtkObject *caller, unsigned long, void *)
+    virtual void Execute(vtkObject *caller, unsigned long eventId, void *callData) override
     {
         vtkSmartPointer<ThreeDAxesWidget> boxWidget = dynamic_cast<ThreeDAxesWidget *>(caller);
         vtkNew<vtkTransform> t;
         dynamic_cast<ThreeDAxesRepresentation *>(boxWidget->GetRepresentation())->GetTransform(t);
         vtkMatrix4x4 *m = vtkMatrix4x4::New();
-        // std::cout << "matrix is \n" << *m << std::endl;
-
         t->GetMatrix(m);
         if (m_matrix != nullptr)
         {

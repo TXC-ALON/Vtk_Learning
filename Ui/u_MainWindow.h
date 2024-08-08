@@ -6,6 +6,10 @@
 #include <cmath>
 #include <cstdlib>
 #include <random>
+#include <vtkInteractorStyleTrackballCamera.h>
+#include <ThreeDAxesCallback.h>
+#include <ThreeDAxesRepresentation.h>
+#include <ThreeDAxesWidget.h>
 
 namespace
 {
@@ -21,7 +25,19 @@ namespace
     void Randomize(vtkSphereSource *sphere, vtkMapper *mapper,
                    vtkGenericOpenGLRenderWindow *window, std::mt19937 &randEng);
 }
+class ssCallback : public vtkCommand
+{
+public:
+    static ssCallback *New()
+    {
+        return new ssCallback;
+    }
 
+    virtual void Execute(vtkObject *caller, unsigned long eventId, void *callData) override
+    {
+        std::cout << eventId << std::endl;
+    }
+};
 class XKeyPressCallback : public vtkCommand
 {
 public:
@@ -39,12 +55,15 @@ public:
             std::cout << key << std::endl;
             if (iren->GetKeyCode() == '0')
             {
+                std::cout << "Reset" << std::endl;
                 renderer->GetActiveCamera()->SetPosition(0, 30, 0);  // 相机位置，这里假设相机在z轴正方向
                 renderer->GetActiveCamera()->SetFocalPoint(0, 0, 0); // 焦点位置，通常设置为场景的中心
                 renderer->GetActiveCamera()->SetViewUp(0, 0, 1);     // 视图向上向量，这里假设向上为y轴正方向
                 renderer->GetActiveCamera()->Azimuth(-45);           // 方位角，绕y轴旋转45度
                 renderer->GetActiveCamera()->Elevation(30);          // 仰角，绕x轴旋转45度
-                iren->GetRenderWindow()->Render();                   // 重新渲染窗口以显示重置效果
+                // iren->GetRenderWindow()->Render();                   // 重新渲染窗口以显示重置效果
+                window->Render();
+                window->Render();
             }
             else if (iren->GetKeyCode() == '7')
             {
@@ -72,6 +91,7 @@ public:
         }
     }
     vtkRenderer *renderer;
+    vtkSmartPointer<vtkGenericOpenGLRenderWindow> window;
 };
 
 class Ui_MainWindow
@@ -79,17 +99,24 @@ class Ui_MainWindow
 public:
     Ui_MainWindow()
     {
-        vtkNew<vtkSphereSource> temp_sphere;
-        sphere = temp_sphere;
+        sphere = vtkSmartPointer<vtkSphereSource>::New();
+        cylinder = vtkSmartPointer<vtkCylinderSource>::New();
     }
     QDockWidget *controlDock;
-    VtkWidget3D vtkWidget;
+    QWidget *centralWidget;
+    VtkWidget3D *vtkWidget;
     vtkSmartPointer<vtkSphereSource> sphere;
+    vtkSmartPointer<vtkCylinderSource> cylinder;
     QPushButton *openFileButton;
     QPushButton *rotateButton;
     vtkSmartPointer<vtkAxesActor> Axes;
     vtkSmartPointer<vtkOrientationMarkerWidget> widget;
     vtkSmartPointer<XKeyPressCallback> keycallback;
+    vtkSmartPointer<vtkRenderWindowInteractor> renderWindowInteractor;
+    vtkSmartPointer<vtkActor> actor;
+    vtkSmartPointer<vtkDataSetMapper> mapper;
+    ThreeDAxesCallback *callback;
+    ThreeDAxesWidget *rotateWidget;
 
 public:
     void
@@ -114,23 +141,51 @@ public:
         dockLayout->addWidget(openFileButton);
         rotateButton = new QPushButton("Rotate", MainWindow);
         dockLayout->addWidget(rotateButton);
-
+        centralWidget = new QWidget(MainWindow);
+        centralWidget->setObjectName(QString::fromUtf8("centralWidget"));
         // Vtk
-        vtkWidget.p_vtkWidget = new QVTKOpenGLNativeWidget(MainWindow);
-        vtkWidget.window = vtkSmartPointer<vtkGenericOpenGLRenderWindow>::New();
-        vtkWidget.p_vtkWidget->setRenderWindow(vtkWidget.window);
-        MainWindow->setCentralWidget(vtkWidget.p_vtkWidget);
+        // 窗口
+        vtkWidget = new VtkWidget3D(centralWidget);
+        vtkWidget->setObjectName(QString::fromUtf8("widgetVTK"));
+        vtkWidget->setMinimumSize(QSize(1200, 900));
 
-        vtkWidget.renderer->SetPreserveDepthBuffer(1);
-        vtkWidget.renderer->SetPreserveColorBuffer(1);
-        vtkWidget.renderer = vtkSmartPointer<vtkRenderer>::New();
-        vtkWidget.renderer->SetBackground(0.733, 0.871, 0.984);
+        MainWindow->setCentralWidget(centralWidget);
+        // 交互器
+        // vtkWidget.renderWindowInteractor = vtkSmartPointer<vtkGenericRenderWindowInteractor>::New();
 
-        vtkWidget.window->AddRenderer(vtkWidget.renderer);
+        // vtkWidget.renderWindowInteractor->SetRenderWindow(vtkWidget.window);
+        // vtkNew<XKeyPressCallback> keycallback;
+        // keycallback->renderer = vtkWidget.renderer;
+        // keycallback->window = vtkWidget.window;
+        // vtkWidget.renderWindowInteractor->AddObserver(vtkCommand::KeyPressEvent, keycallback);
 
-        vtkWidget.renderWindowInteractor = vtkSmartPointer<vtkRenderWindowInteractor>::New();
-        vtkWidget.renderWindowInteractor->SetRenderWindow(vtkWidget.window);
-        // 添加坐标轴
+        // vtkNew<vtkInteractorStyleTrackballCamera> style;
+        // vtkWidget.renderWindowInteractor->SetInteractorStyle(style);
+
+        // 模型
+
+        cylinder->SetCenter(0.0, 0.0, 0.0);
+        cylinder->SetRadius(5.0);
+        cylinder->SetHeight(2.0);
+        cylinder->SetResolution(100);
+        // vtkSmartPointer<vtkSphereSource> sphere = vtkSmartPointer<vtkSphereSource>::New();
+        sphere->SetRadius(1.0);
+        sphere->SetThetaResolution(100);
+        sphere->SetPhiResolution(100);
+        sphere->Update();
+        vtkSmartPointer<vtkDataSetMapper> sphere_mapper = vtkSmartPointer<vtkDataSetMapper>::New();
+        vtkSmartPointer<vtkDataSetMapper> cylinder_mapper = vtkSmartPointer<vtkDataSetMapper>::New();
+
+        sphere_mapper->SetInputConnection(sphere->GetOutputPort());
+        cylinder_mapper->SetInputConnection(cylinder->GetOutputPort());
+        // mapper = cylinder_mapper;
+        actor = vtkSmartPointer<vtkActor>::New();
+        actor->SetMapper(cylinder_mapper);
+        actor->GetProperty()->SetEdgeVisibility(true);
+        actor->GetProperty()->SetRepresentationToSurface();
+        vtkWidget->m_renderer->AddActor(actor);
+
+        // this->vtkWidget->m_renderWindow->AddRenderer(vtkWidget->m_renderer);
         vtkNew<vtkAxes> modelAxesSource;
         modelAxesSource->SetScaleFactor(20);
         modelAxesSource->SetOrigin(0, 0, 0);
@@ -138,45 +193,45 @@ public:
         modelAxesMapper->SetInputConnection(modelAxesSource->GetOutputPort());
         vtkNew<vtkActor> modelAxes;
         modelAxes->SetMapper(modelAxesMapper);
-        vtkWidget.renderer->AddActor(modelAxes);
+        vtkWidget->m_renderer->AddActor(modelAxes);
 
-        // 添加资源
+        vtkNew<vtkInteractorStyleTrackballCamera> interactorStyle;
+        vtkWidget->interactor()->SetInteractorStyle(interactorStyle);
 
-        sphere->SetRadius(1.0);
-        sphere->SetThetaResolution(100);
-        sphere->SetPhiResolution(100);
-        vtkNew<vtkDataSetMapper> mapper;
-        mapper->SetInputConnection(sphere->GetOutputPort());
-        vtkNew<vtkActor> actor;
-        actor->SetMapper(mapper);
-        actor->GetProperty()->SetEdgeVisibility(true);
-        actor->GetProperty()->SetRepresentationToSurface();
-        vtkWidget.renderer->AddActor(actor);
-        this->vtkWidget.window->AddRenderer(vtkWidget.renderer);
+        vtkNew<XKeyPressCallback> keycallback;
+        keycallback->renderer = vtkWidget->m_renderer;
+        keycallback->window = vtkWidget->m_renderWindow;
+        vtkWidget->interactor()->AddObserver(vtkCommand::KeyPressEvent, keycallback);
 
-        vtkWidget.renderer->GetActiveCamera()->SetPosition(0, 30, 0);  // 相机位置，这里假设相机在z轴正方向
-        vtkWidget.renderer->GetActiveCamera()->SetFocalPoint(0, 0, 0); // 焦点位置，通常设置为场景的中心
-        vtkWidget.renderer->GetActiveCamera()->SetViewUp(0, 0, 1);     // 视图向上向量，这里假设向上为y轴正方向
-        vtkWidget.renderer->GetActiveCamera()->Azimuth(-45);           // 方位角，绕y轴旋转45度
-        vtkWidget.renderer->GetActiveCamera()->Elevation(30);          // 仰角，绕x轴旋转45度
-        // vtkWidget.renderer->Render();                                  // 重新渲染窗口以显示重置效果
+        callback = ThreeDAxesCallback::New();
+        // rotateWidget->SetPriority(1.0); // 更高的优先级
+        //  创建旋转控件
+        rotateWidget = ThreeDAxesWidget::New();
+        rotateWidget->SetInteractor(vtkWidget->interactor());
+        rotateWidget->SetCurrentRenderer(vtkWidget->m_renderer);
+        rotateWidget->CreateDefaultRepresentation();
+        rotateWidget->GetRepresentation()->SetPlaceFactor(1);
+        rotateWidget->GetRepresentation()->PlaceWidget(actor->GetBounds());
+        callback->SetProp3D(actor);
+        rotateWidget->AddObserver(vtkCommand::StartInteractionEvent, callback, 1.0);
+        rotateWidget->AddObserver(vtkCommand::InteractionEvent, callback, 1.0);
+        rotateWidget->AddObserver(vtkCommand::EndInteractionEvent, callback, 1.0);
 
-        // 创建回调对象
-        keycallback = vtkSmartPointer<XKeyPressCallback>::New();
-        keycallback->renderer = vtkWidget.renderer;
-        vtkWidget.renderWindowInteractor->AddObserver(vtkCommand::KeyPressEvent, keycallback);
+        // vtkNew<ssCallback> callbackss;
+        // vtkWidget->interactor()->AddObserver(vtkCommand::AnyEvent, callbackss);
+        // // 启用旋转控件
+        rotateWidget->EnabledOn();
+        // vtkWidget->interactor()->Initialize();
+        // vtkWidget->interactor()->Start();
 
-        this->vtkWidget.window->Render();
-        vtkWidget.renderWindowInteractor->Initialize();
-        vtkWidget.renderWindowInteractor->Start();
         // Setup initial status
-        std::mt19937 randEng(0);
-        ::Randomize(sphere, mapper, this->vtkWidget.window.GetPointer(), randEng);
+        // std::mt19937 randEng(0);
+        // ::Randomize(sphere, mapper, this->vtkWidget.window.GetPointer(), randEng);
 
-        // connect the buttons
-        QObject::connect(randomizeButton, &QPushButton::released,
-                         [sphere = sphere.GetPointer(), mapper = mapper.GetPointer(), window = this->vtkWidget.window.GetPointer(), &randEng]()
-                         { ::Randomize(sphere, mapper, window, randEng); });
+        // // connect the buttons
+        // QObject::connect(randomizeButton, &QPushButton::released,
+        //                  [sphere = sphere.GetPointer(), mapper = mapper.GetPointer(), window = this->vtkWidget.window.GetPointer(), &randEng]()
+        //                  { ::Randomize(sphere, mapper, window, randEng); });
     }
 };
 namespace Ui

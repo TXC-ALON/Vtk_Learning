@@ -13,6 +13,8 @@ set(Dev_PREFIX "D:/Dev")
 set(CMAKE_TOOLCHAIN_FILE "" CACHE FILEPATH "Vcpkg toolchain file")
 set(PROJECT_INCLUDE ${CMAKE_CURRENT_SOURCE_DIR}/include)
 set(EIGEN_PATH "${Dev_PREFIX}/Eigen")
+set(ThreeDAXE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/ThreeDAxes)
+
 set(EIGEN_MACROS_H_PATH "${EIGEN_PATH}/Eigen/src/Core/util/Macros.h")
 # 从Macros.h中读取版本号
 file(STRINGS "${EIGEN_MACROS_H_PATH}" eigen_version_lines REGEX "#define EIGEN_[A-Z]+_VERSION")
@@ -60,6 +62,8 @@ find_package(VTK COMPONENTS
   RenderingAnnotation
   GUISupportQt
   RenderingQt
+
+  
   
 )
 find_package(Qt5 COMPONENTS Widgets Core Gui REQUIRED)
@@ -119,12 +123,20 @@ file(GLOB_RECURSE ADMESH_FILES ${ADMESH}/*)
 foreach(item IN LISTS ADMESH_FILES)
     message(STATUS " ADMESH_FILES item: ${item}")
 endforeach()
+message("ThreeDAXE_PATH = ${ThreeDAXE_PATH}")
+file(GLOB ThreeD_Files "${ThreeDAXE_PATH}/*.cpp") # 假设源文件在名为"src"的子目录下
+# foreach(item IN LISTS ThreeD_Files)
+#     message(STATUS " ThreeD_Files item: ${item}")
+# endforeach()
 # 项目名称
-add_executable(${PROJECT_NAME} ${SOURCE_FILES} ${HEADER_FILES} ${ADMESH_FILES})
+add_executable(${PROJECT_NAME} ${SOURCE_FILES} ${HEADER_FILES} ${ADMESH_FILES} ${ThreeD_Files})
 target_include_directories(${PROJECT_NAME} PUBLIC ${PROJECT_INCLUDE})
 target_include_directories(${PROJECT_NAME} PUBLIC ${Boost_INCLUDE_DIRS})
 target_include_directories(${PROJECT_NAME} PUBLIC ${VTK_INCLUDE})
 target_include_directories(${PROJECT_NAME} PUBLIC ${ADMESH})
+target_include_directories(${PROJECT_NAME} PUBLIC ${ThreeDAXE_PATH})
+
+
 ## 直接包含编译
 target_include_directories(${PROJECT_NAME} PUBLIC ${EIGEN_PATH})
 

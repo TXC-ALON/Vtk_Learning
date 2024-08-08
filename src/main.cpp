@@ -26,10 +26,6 @@ int main(int argc, char *argv[])
     test.z = 1.999;
     test.stl_scale(2);
     std::cout << test.x << std::endl;
-    std::cout << "Eigen version: "
-              << EIGEN_WORLD_VERSION << "."
-              << EIGEN_MAJOR_VERSION << "."
-              << EIGEN_MINOR_VERSION << std::endl;
     QApplication app(argc, argv);
     MainWindow mainWindow;
     mainWindow.show();

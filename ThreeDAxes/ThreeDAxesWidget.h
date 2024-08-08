@@ -1,5 +1,4 @@
-#ifndef ZXROTATEWIDGET_H
-#define ZXROTATEWIDGET_H
+#pragma once
 
 #include "vtkAbstractWidget.h"
 #include "vtkInteractionWidgetsModule.h" // For export macro
@@ -90,5 +89,3 @@ private:
     ThreeDAxesWidget(const ThreeDAxesWidget &) = delete;
     void operator=(const ThreeDAxesWidget &) = delete;
 };
-
-#endif // MPBOXWIDGET2_H

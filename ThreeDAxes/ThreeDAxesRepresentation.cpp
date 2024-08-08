@@ -382,7 +382,7 @@ void ThreeDAxesRepresentation::WidgetInteraction(double e[2])
     // Process the motion
     if (this->InteractionState == ThreeDAxesRepresentation::RotateYZ)
     {
-        std::cout << "--RotateYZ" << std::endl;
+        // std::cout << "--RotateYZ" << std::endl;
         this->CircleRadius = this->InitialLength / 2.;
 
         vtkPoints *pts = this->CircleGeometry[0]->GetOutput()->GetPoints();
@@ -415,7 +415,7 @@ void ThreeDAxesRepresentation::WidgetInteraction(double e[2])
     }
     else if (this->InteractionState == ThreeDAxesRepresentation::RotateXZ)
     {
-        std::cout << "--RotateXZ" << std::endl;
+        // std::cout << "--RotateXZ" << std::endl;
         this->CircleRadius = this->InitialLength / 2.;
         vtkPoints *pts = this->CircleGeometry[1]->GetOutput()->GetPoints();
         vtkIdType npts = pts->GetNumberOfPoints();
@@ -447,7 +447,7 @@ void ThreeDAxesRepresentation::WidgetInteraction(double e[2])
     }
     else if (this->InteractionState == ThreeDAxesRepresentation::RotateXY)
     {
-        std::cout << "--RotateXY" << std::endl;
+        // std::cout << "--RotateXY" << std::endl;
 
         this->CircleRadius = this->InitialLength / 2.;
         vtkPoints *pts = this->CircleGeometry[2]->GetOutput()->GetPoints();
@@ -480,13 +480,13 @@ void ThreeDAxesRepresentation::WidgetInteraction(double e[2])
     }
     else if (this->InteractionState == ThreeDAxesRepresentation::Translating)
     {
-        std::cout << "--Translating" << std::endl;
+        // std::cout << "--Translating" << std::endl;
 
         this->Translate(startMovePoint, pickPoint);
     }
     else if (this->InteractionState == ThreeDAxesRepresentation::Rotating)
     {
-        std::cout << "--Rotating" << std::endl;
+        // std::cout << "--Rotating" << std::endl;
         this->CircleRadius = 1.5 * this->InitialLength / 2.;
         vtkPoints *pts = this->CircleGeometry[3]->GetOutput()->GetPoints();
         vtkIdType npts = pts->GetNumberOfPoints();
@@ -540,14 +540,13 @@ void ThreeDAxesRepresentation::WidgetInteraction(double e[2])
 //----------------------------------------------------------------------
 void ThreeDAxesRepresentation::EndWidgetInteraction(double vtkNotUsed(e)[2])
 {
-    std::cout << "EndWidgetInteraction" << std::endl;
-    // Have to play games here because of the "pipelined" nature of the
-    // transformations.
+    // std::cout << "EndWidgetInteraction" << std::endl;
+    //  Have to play games here because of the "pipelined" nature of the
+    //  transformations.
     this->GetTransform(this->TempTransform);
     this->TotalTransform->SetMatrix(this->TempTransform->GetMatrix());
     vtkMatrix4x4 *m = vtkMatrix4x4::New();
     TotalTransform->GetMatrix(m);
-    // std::cout << "TotalTransform is \n" << *m << std::endl;
     // Reset the current transformations
     this->Transform->Identity();
 }
@@ -588,7 +587,7 @@ void ThreeDAxesRepresentation::GenerateRotateCircle()
 // Loop through all points and translate them
 void ThreeDAxesRepresentation::Translate(const double *p1, const double *p2)
 {
-    std::cout << "Translate" << std::endl;
+    // std::cout << "Translate" << std::endl;
     double *pts = static_cast<vtkDoubleArray *>(this->Points->GetData())->GetPointer(0);
     double v[3] = {0, 0, 0};
 
@@ -621,7 +620,7 @@ void ThreeDAxesRepresentation::Rotate(
     int X, int Y, const double *p0, const double *p1, const double *p2, const double *vpn)
 {
 
-    std::cout << "Rotate" << std::endl;
+    // std::cout << "Rotate" << std::endl;
 
     double v0[3], v1[3], v2[3], v[3]; // vector of motion
     double axis[3];                   // axis of rotation
@@ -729,7 +728,7 @@ void ThreeDAxesRepresentation::Rotate(
 
 void ThreeDAxesRepresentation::TranslateX(const double *p1, const double *p2)
 {
-    std::cout << "TranslateX" << std::endl;
+    // std::cout << "TranslateX" << std::endl;
     double *pts = static_cast<vtkDoubleArray *>(this->Points->GetData())->GetPointer(0);
     double v[3] = {0, 0, 0};
 
@@ -779,7 +778,7 @@ void ThreeDAxesRepresentation::TranslateX(const double *p1, const double *p2)
 
 void ThreeDAxesRepresentation::TranslateY(const double *p1, const double *p2)
 {
-    std::cout << "TranslateY" << std::endl;
+    // std::cout << "TranslateY" << std::endl;
 
     double *pts = static_cast<vtkDoubleArray *>(this->Points->GetData())->GetPointer(0);
     double v[3] = {0, 0, 0};
@@ -819,7 +818,7 @@ void ThreeDAxesRepresentation::TranslateY(const double *p1, const double *p2)
 
 void ThreeDAxesRepresentation::TranslateZ(const double *p1, const double *p2)
 {
-    std::cout << "TranslateY" << std::endl;
+    // std::cout << "TranslateZ" << std::endl;
 
     double *pts = static_cast<vtkDoubleArray *>(this->Points->GetData())->GetPointer(0);
     double v[3] = {0, 0, 0};
@@ -977,10 +976,9 @@ void ThreeDAxesRepresentation::PlaceWidget(double bds[6])
 //----------------------------------------------------------------------------
 void ThreeDAxesRepresentation::GetTransform(vtkTransform *t)
 {
-    std::cout << "GetTransform" << std::endl;
-
-    // The transformation is relative to the initial bounds.
-    // Initial bounds are set when PlaceWidget() is invoked.
+    // std::cout << "GetTransform" << std::endl;
+    //  The transformation is relative to the initial bounds.
+    //  Initial bounds are set when PlaceWidget() is invoked.
     t->Identity();
     t->DeepCopy(this->Transform);
     t->Concatenate(this->TotalTransform);
@@ -1026,7 +1024,7 @@ int ThreeDAxesRepresentation::ComputeInteractionState(int X, int Y, int modify)
 
     if (path != nullptr)
     {
-        std::cout << "Circle Path" << std::endl;
+        //  std::cout << "Circle Path" << std::endl;
 
         this->ValidPick = 1;
         this->LastPicker = this->CirclePicker;
@@ -1050,8 +1048,6 @@ int ThreeDAxesRepresentation::ComputeInteractionState(int X, int Y, int modify)
     }
     else if (arrow_path != nullptr)
     {
-        std::cout << "arrow_path" << std::endl;
-
         this->ValidPick = 1;
         this->LastPicker = this->HandlePicker;
         this->CurrentHandle = reinterpret_cast<vtkActor *>(arrow_path->GetFirstNode()->GetViewProp());
@@ -1070,7 +1066,7 @@ int ThreeDAxesRepresentation::ComputeInteractionState(int X, int Y, int modify)
     }
     else if (handle_path != nullptr)
     {
-        std::cout << "handle path" << std::endl;
+        //  std::cout << "handle path" << std::endl;
         this->ValidPick = 1;
         this->LastPicker = this->HandlePicker;
         this->CurrentHandle = reinterpret_cast<vtkActor *>(handle_path->GetFirstNode()->GetViewProp());

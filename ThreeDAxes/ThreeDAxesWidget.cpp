@@ -248,6 +248,10 @@ void ThreeDAxesWidget::CreateDefaultRepresentation()
 }
 ThreeDAxesRepresentation *ThreeDAxesWidget::GetRepresentation()
 {
-
+    // std::cout << "GetRepresentation" << std::endl;
+    if (this->WidgetRep == nullptr)
+    {
+        this->WidgetRep = ThreeDAxesRepresentation::New();
+    }
     return reinterpret_cast<ThreeDAxesRepresentation *>(this->WidgetRep);
 }
