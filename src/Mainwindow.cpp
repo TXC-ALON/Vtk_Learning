@@ -28,21 +28,30 @@ void MainWindow::ShowAxes()
     {
         std::cout << "to enable" << std::endl;
         vtkSmartPointer<vtkActor> actor = VTKDataManager::getInstance()->ObjectActorMap[1];
-        ui->rotateWidget->SetInteractor(ui->vtkWidget->interactor());
-        ui->rotateWidget->SetCurrentRenderer(ui->vtkWidget->m_renderer);
-        ui->rotateWidget->CreateDefaultRepresentation();
-        ui->rotateWidget->GetRepresentation()->SetPlaceFactor(1);
-        ui->rotateWidget->GetRepresentation()->PlaceWidget(actor->GetBounds());
-        ui->callback->SetProp3D(actor);
-        ui->rotateWidget->AddObserver(vtkCommand::StartInteractionEvent, ui->callback, 1.0);
-        ui->rotateWidget->AddObserver(vtkCommand::InteractionEvent, ui->callback, 1.0);
-        ui->rotateWidget->AddObserver(vtkCommand::EndInteractionEvent, ui->callback, 1.0);
-        ui->rotateWidget->EnabledOn();
+        if (actor != nullptr)
+        {
+            ui->rotateWidget->SetInteractor(ui->vtkWidget->interactor());
+            ui->rotateWidget->SetCurrentRenderer(ui->vtkWidget->m_renderer);
+            ui->rotateWidget->CreateDefaultRepresentation();
+            ui->rotateWidget->GetRepresentation()->SetPlaceFactor(1);
+            ui->rotateWidget->GetRepresentation()->PlaceWidget(actor->GetBounds());
+            ui->callback->SetProp3D(actor);
+            ui->rotateWidget->AddObserver(vtkCommand::StartInteractionEvent, ui->callback, 1.0);
+            ui->rotateWidget->AddObserver(vtkCommand::InteractionEvent, ui->callback, 1.0);
+            ui->rotateWidget->AddObserver(vtkCommand::EndInteractionEvent, ui->callback, 1.0);
+            ui->rotateWidget->EnabledOn();
+            ui->vtkWidget->m_renderWindow->Render();
+        }
+        else
+        {
+            return;
+        }
     }
     else
     {
         std::cout << "close" << std::endl;
         ui->rotateWidget->EnabledOff();
+        ui->vtkWidget->m_renderWindow->Render();
     }
 }
 void MainWindow::openFileSlot()
