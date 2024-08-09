@@ -28,3 +28,9 @@
 #include <vtkRenderWindow.h>
 #include <vtkRenderWindowInteractor.h>
 #include <vtkGenericOpenGLRenderWindow.h>
+#include <vtkPLYReader.h>
+#include <vtkXMLPolyDataReader.h>
+#include <vtkOBJReader.h>
+#include <vtkSTLReader.h>
+#include <vtkPolyDataReader.h>
+#include <vtkBYUReader.h>

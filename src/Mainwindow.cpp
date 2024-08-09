@@ -50,6 +50,7 @@ void MainWindow::ShowAxes()
     else
     {
         std::cout << "close" << std::endl;
+        // ui->rotateWidget->CreateDefaultRepresentation();
         ui->rotateWidget->EnabledOff();
         ui->vtkWidget->m_renderWindow->Render();
     }
@@ -93,6 +94,7 @@ void MainWindow::RotateSlot()
     pRotateWidget->InitOpenPage();
 }
 
+
 void MainWindow::connectSignals(QWidget *widget)
 {
     // setAcceptDrops(true);
@@ -103,6 +105,8 @@ void MainWindow::connectSignals(QWidget *widget)
 
 void MainWindow::setupWidget(QWidget *widget)
 {
+    QIcon icon("D:/0Learning/Vtk/0805_qt5_vtk/resource/Proslice.ico");
+    setWindowIcon(icon);
     // setupWidgetLayoutAndStyle(widget);
     connectSignals(widget);
 }

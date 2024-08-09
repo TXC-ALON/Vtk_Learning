@@ -121,6 +121,7 @@ public:
     void
     setupUi(QMainWindow *MainWindow)
     {
+        
         MainWindow->resize(1200, 900);
         // Control area setup
         controlDock = new QDockWidget(MainWindow);
