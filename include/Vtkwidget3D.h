@@ -1,5 +1,4 @@
-#ifndef VTKWIDGET_H
-#define VTKWIDGET_H
+#pragma once
 
 #include <QWidget>
 #include <QVTKOpenGLNativeWidget.h>
@@ -31,5 +30,3 @@ protected:
 signals:
     void mousePressedSignal(const QPoint &pos);
 };
-
-#endif // VTKWIDGET_H
