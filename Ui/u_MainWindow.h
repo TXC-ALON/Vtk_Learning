@@ -92,11 +92,13 @@ public:
     }
     QDockWidget *controlDock;
     QWidget *centralWidget;
+
+    QGridLayout *gridLayout;
     VtkWidget3D *vtkWidget;
     QPushButton *openFileButton;
     QPushButton *rotateButton;
     QPushButton *ShowAxesButton;
-
+    QDoubleSpinBox *doubleSpinBox_Type;
     vtkSmartPointer<vtkAxesActor> Axes;
     vtkSmartPointer<vtkOrientationMarkerWidget> widget;
     vtkSmartPointer<XKeyPressCallback> keycallback;

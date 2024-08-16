@@ -37,6 +37,7 @@
 #include <QComboBox>
 #include <QGroupBox>
 #include <QFrame>
+#include <QDoubleSpinBox>
 // Layout组织
 #include <QHBoxLayout>
 #include <QVBoxLayout>

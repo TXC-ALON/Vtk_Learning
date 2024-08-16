@@ -38,3 +38,6 @@
 #include <vtkGlyph3D.h>
 #include <vtkNamedColors.h>
 #include <vtkTransformPolyDataFilter.h>
+#include <vtkParametricMobius.h>
+#include <vtkParametricFunctionSource.h>
+#include <vtkMath.h>
