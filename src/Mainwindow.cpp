@@ -94,10 +94,12 @@ void MainWindow::RotateSlot()
     pRotateWidget->InitOpenPage();
 }
 
-
 void MainWindow::connectSignals(QWidget *widget)
 {
     // setAcceptDrops(true);
+    connect(pRotateWidget, &RotateWidget::sendData, this, &MainWindow::receiveData);
+    connect(pRotateWidget, &RotateWidget::render_update, this, &MainWindow::Render_Update);
+
     connect(ui->rotateButton, &QPushButton::clicked, this, &MainWindow::RotateSlot);
     connect(ui->openFileButton, &QPushButton::clicked, this, &MainWindow::openFileSlot);
     connect(ui->ShowAxesButton, &QPushButton::clicked, this, &MainWindow::ShowAxes);

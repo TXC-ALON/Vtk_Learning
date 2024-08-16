@@ -10,7 +10,7 @@
 #include <ThreeDAxesCallback.h>
 #include <ThreeDAxesRepresentation.h>
 #include <ThreeDAxesWidget.h>
-
+#include <VTK_Utils.h>
 namespace
 {
     /**
@@ -61,8 +61,8 @@ public:
                 renderer->GetActiveCamera()->SetViewUp(0, 0, 1);     // 视图向上向量，这里假设向上为y轴正方向
                 renderer->GetActiveCamera()->Azimuth(-45);           // 方位角，绕y轴旋转45度
                 renderer->GetActiveCamera()->Elevation(30);          // 仰角，绕x轴旋转45度
-                // iren->GetRenderWindow()->Render();                   // 重新渲染窗口以显示重置效果
-                window->Render();
+                                                                     // iren->GetRenderWindow()->Render();                   // 重新渲染窗口以显示重置效果
+                iren->GetRenderWindow()->Render();                   // 重新渲染窗口以显示效果
                 window->Render();
             }
             else if (iren->GetKeyCode() == '7')
@@ -121,7 +121,6 @@ public:
     void
     setupUi(QMainWindow *MainWindow)
     {
-        
         MainWindow->resize(1200, 900);
         // Control area setup
         controlDock = new QDockWidget(MainWindow);
@@ -160,31 +159,9 @@ public:
         keycallback->renderer = vtkWidget->m_renderer;
         keycallback->window = vtkWidget->m_renderWindow;
         vtkWidget->interactor()->AddObserver(vtkCommand::KeyPressEvent, keycallback);
-
-        vtkNew<vtkAxes> modelAxesSource;
-        modelAxesSource->SetScaleFactor(20);
-        modelAxesSource->SetOrigin(0, 0, 0);
-        vtkNew<vtkPolyDataMapper> modelAxesMapper;
-        modelAxesMapper->SetInputConnection(modelAxesSource->GetOutputPort());
-        vtkNew<vtkActor> modelAxes;
-        modelAxes->SetMapper(modelAxesMapper);
-        vtkWidget->m_renderer->AddActor(modelAxes);
-
-        // vtkNew<ssCallback> callbackss;
-        // vtkWidget->interactor()->AddObserver(vtkCommand::AnyEvent, callbackss);
-        // // 启用旋转控件
-
-        // vtkWidget->interactor()->Initialize();
-        // vtkWidget->interactor()->Start();
-
-        // Setup initial status
-        // std::mt19937 randEng(0);
-        // ::Randomize(sphere, mapper, this->vtkWidget.window.GetPointer(), randEng);
-
-        // // connect the buttons
-        // QObject::connect(randomizeButton, &QPushButton::released,
-        //                  [sphere = sphere.GetPointer(), mapper = mapper.GetPointer(), window = this->vtkWidget.window.GetPointer(), &randEng]()
-        //                  { ::Randomize(sphere, mapper, window, randEng); });
+        // 添加坐标轴
+        // Add_Arrow_Axes(vtkWidget->m_renderer, 15);
+        Add_Line_Axes(vtkWidget->m_renderer, 15);
     }
 };
 namespace Ui

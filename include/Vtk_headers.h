@@ -34,3 +34,7 @@
 #include <vtkSTLReader.h>
 #include <vtkPolyDataReader.h>
 #include <vtkBYUReader.h>
+#include <vtkTubeFilter.h>
+#include <vtkGlyph3D.h>
+#include <vtkNamedColors.h>
+#include <vtkTransformPolyDataFilter.h>

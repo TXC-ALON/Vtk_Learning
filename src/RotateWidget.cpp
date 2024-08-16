@@ -111,6 +111,7 @@ void RotateWidget::okSlot()
 	// TODO 根据groupBoxManual和groupBoxAuto的状态来确定获取的对应的参数
 	if (ui->groupBoxManual->isEnabled())
 	{
+		emit sendData("Hello from the first window");
 	}
 	else if (ui->groupBoxAuto->isEnabled())
 	{
@@ -130,6 +131,7 @@ void RotateWidget::applySlot()
 	{
 		vtkSmartPointer<vtkActor> actor = VTKDataManager::getInstance()->ObjectActorMap[1];
 		SetModelRotationMatrix(actor, 0, 0, 0, temp_x, temp_y, temp_z);
+		emit render_update();
 		// emit render_Update();
 		// TODO 手动姿态生效
 

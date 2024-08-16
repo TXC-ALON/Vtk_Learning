@@ -19,9 +19,9 @@ public:
     MainWindow(QWidget *parent = nullptr) : QMainWindow(parent),
                                             ui(new Ui::MainWindow)
     {
+        pRotateWidget = new RotateWidget(this);
         ui->setupUi(this);
         setupWidget(this);
-        pRotateWidget = new RotateWidget(this);
         recent_skein_directory = "";
     }
     ~MainWindow();
@@ -39,6 +39,16 @@ private slots:
     // void AutoRepairSlot();
     // void MoveSlot();
     void RotateSlot();
+    void receiveData(QString str)
+    {
+        // in Mainwindow
+        std::cout << str.toStdString() << std::endl;
+    }
+    void Render_Update()
+    {
+        std::cout << "Render_Update" << std::endl;
+        ui->vtkWidget->m_renderWindow->Render();
+    }
 
 private:
     void connectSignals(QWidget *widget);
