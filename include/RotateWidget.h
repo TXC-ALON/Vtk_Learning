@@ -21,7 +21,9 @@ public:
 private:
 	void setupWidgetLayoutAndStyle(QWidget *widget);
 	void connectSignals(QWidget *widget);
-
+signals:
+	void sendData(const QString &data);
+	void render_update();
 private slots:
 	// X,Y,Z,dX,dY,dZ值事件
 	void onValueChangedX(double value);
@@ -33,9 +35,9 @@ private slots:
 
 private:
 	Ui::RotateWidget *ui;
-	double temp_x;
-	double temp_y;
-	double temp_z;
+	double temp_x = 0;
+	double temp_y = 0;
+	double temp_z = 0;
 signals:
 	void Rotate_update_Signal(); // 自定义信号
 	void Rotate_OK_Signal();	 // 自定义信号

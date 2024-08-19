@@ -1288,10 +1288,11 @@ void ThreeDAxesRepresentation::SizeHandles()
     /*double* center = static_cast<vtkDoubleArray*>(this->Points->GetData())->GetPointer(3 * 14);
     double radius = this->vtkWidgetRepresentation::SizeHandlesInPixels(1.5, center);*/
 
-    double radius = this->vtkWidgetRepresentation::SizeHandlesInPixels(1.5, this->Origin);
-    if (radius < 0.05)
+    double radius = this->vtkWidgetRepresentation::SizeHandlesInPixels(2.5, this->Origin);
+    // std::cout << "SizeHandles radius " << radius << std::endl;
+    if (radius < 0.1)
     {
-        radius = 0.05;
+        radius = 0.1;
     }
     this->HandleGeometry->SetRadius(radius);
 }

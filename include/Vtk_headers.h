@@ -28,3 +28,16 @@
 #include <vtkRenderWindow.h>
 #include <vtkRenderWindowInteractor.h>
 #include <vtkGenericOpenGLRenderWindow.h>
+#include <vtkPLYReader.h>
+#include <vtkXMLPolyDataReader.h>
+#include <vtkOBJReader.h>
+#include <vtkSTLReader.h>
+#include <vtkPolyDataReader.h>
+#include <vtkBYUReader.h>
+#include <vtkTubeFilter.h>
+#include <vtkGlyph3D.h>
+#include <vtkNamedColors.h>
+#include <vtkTransformPolyDataFilter.h>
+#include <vtkParametricMobius.h>
+#include <vtkParametricFunctionSource.h>
+#include <vtkMath.h>

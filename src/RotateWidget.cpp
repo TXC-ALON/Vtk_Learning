@@ -1,5 +1,7 @@
-﻿#include <RotateWidget.h>
-
+#include <RotateWidget.h>
+#include <Vtk_headers.h>
+#include <VTKDataManager.h>
+#include <VTK_Utils.h>
 RotateWidget::RotateWidget(QWidget *parent)
 	: QWidget(parent),
 	  ui(new Ui::RotateWidget)
@@ -53,7 +55,6 @@ void RotateWidget::connectSignals(QWidget *widget)
 	connect(ui->doubleSpinBoxX, SIGNAL(valueChanged(double)), this, SLOT(onValueChangedX(double)));
 	connect(ui->doubleSpinBoxY, SIGNAL(valueChanged(double)), this, SLOT(onValueChangedY(double)));
 	connect(ui->doubleSpinBoxZ, SIGNAL(valueChanged(double)), this, SLOT(onValueChangedZ(double)));
-
 	// 复选框
 	connect(ui->checkBoxFlip, &QCheckBox::stateChanged, this, [=](int state)
 			{
@@ -110,6 +111,7 @@ void RotateWidget::okSlot()
 	// TODO 根据groupBoxManual和groupBoxAuto的状态来确定获取的对应的参数
 	if (ui->groupBoxManual->isEnabled())
 	{
+		emit sendData("Hello from the first window");
 	}
 	else if (ui->groupBoxAuto->isEnabled())
 	{
@@ -127,6 +129,10 @@ void RotateWidget::applySlot()
 	// TODO 根据groupBoxManual和groupBoxAuto的状态来确定获取的对应的参数
 	if (ui->groupBoxManual->isEnabled())
 	{
+		vtkSmartPointer<vtkActor> actor = VTKDataManager::getInstance()->ObjectActorMap[1];
+		SetModelRotationMatrix(actor, 0, 0, 0, temp_x, temp_y, temp_z);
+		emit render_update();
+		// emit render_Update();
 		// TODO 手动姿态生效
 
 		// TODO 获取X,Y,Z的旋转角度值，调整VTK里的模型角度
@@ -141,5 +147,5 @@ void RotateWidget::applySlot()
 		// TODO 获取支架自动调整开关状态，调整VTK中的支架模型
 	}
 
-	ui->pushButtonOK->setEnabled(false);
+	ui->pushButtonOK->setEnabled(true);
 }

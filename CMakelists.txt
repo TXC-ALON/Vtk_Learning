@@ -102,7 +102,7 @@ message (STATUS "Boost Version: ${Boost_VERSION}
 ")
 
 # 添加头文件和源文件
-file(GLOB_RECURSE HEADER_FILES "include/*")
+file(GLOB_RECURSE HEADER_FILES "include/*" "Ui/*")
 # 添加VTK头文件和源文件
 file(GLOB_RECURSE VTK_HEADER_FILES "${VTK_INCLUDE}/*.h")
 
@@ -116,6 +116,9 @@ foreach(item IN LISTS ${Boost_LIBRARIES})
     message(STATUS " Boost_LIBRARIES item: ${item}")
 endforeach()
 
+foreach(item IN LISTS HEADER_FILES)
+    message(STATUS " --HEADER_FILES item: ${item}")
+endforeach()
 
 set(ADMESH ${CMAKE_CURRENT_SOURCE_DIR}/P3DS/admesh)
 message("ADMESH is ${ADMESH}")
