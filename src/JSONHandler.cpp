@@ -1,4 +1,4 @@
-#include <JSONHandler.h>
+#include <JsonHandler.h>
 
 JSONHandler::JSONHandler(QObject *parent) : QObject(parent) {}
 
@@ -26,18 +26,25 @@ bool JSONHandler::readJsonFile(const QString &filePath)
 
 bool JSONHandler::writeJsonFile(const QString &filePath) const
 {
+    return saveJsonToFile(jsonObject, filePath);
+}
+// 定义保存JSON到文件的函数
+bool JSONHandler::saveJsonToFile(const QJsonObject &jsonObj, const QString &filePath)
+{
     QFile file(filePath);
+
     if (!file.open(QIODevice::WriteOnly | QIODevice::Text))
     {
+        qWarning("Could not open file for writing.");
         return false;
     }
 
-    QJsonDocument document(jsonObject);
-    file.write(document.toJson(QJsonDocument::Indented));
+    QJsonDocument jsonDoc(jsonObj);
+    file.write(jsonDoc.toJson(QJsonDocument::Indented));
     file.close();
+
     return true;
 }
-
 bool JSONHandler::parseJsonString(const QString &jsonString)
 {
     QJsonParseError parseError;
@@ -50,7 +57,18 @@ bool JSONHandler::parseJsonString(const QString &jsonString)
     jsonObject = document.object();
     return true;
 }
-
+void JSONHandler::setValue(const QStringList &keys, const QJsonValue &value) // 增改数据
+{
+    QJsonObject rootObj = jsonObject;
+    setvalue(rootObj, keys, value);
+    jsonObject = rootObj;
+}
+void JSONHandler::removeValue(const QStringList &keys) // 删除指定条目数据
+{
+    QJsonObject rootObj = jsonObject;
+    removevalue(rootObj, keys);
+    jsonObject = rootObj;
+}
 QString JSONHandler::getJsonString() const
 {
     QJsonDocument document(jsonObject);
@@ -78,72 +96,120 @@ QJsonValue JSONHandler::getValue(const QStringList &keys) const
     }
     return value;
 }
-
-void JSONHandler::setValue(const QStringList &keys, const QJsonValue &value)
+void JSONHandler::printJsonObject(const QJsonObject &obj, const QString &prefix)
 {
-    QJsonObject *currentObject = &jsonObject;
-    foreach (const QString &key, currentObject->keys())
+    // 遍历QJsonObject中的所有键值对
+    for (auto it = obj.begin(); it != obj.end(); ++it)
     {
-        qDebug() << key << ":" << currentObject->value(key);
-    }
-    for (int i = 0; i < keys.size() - 1; ++i)
-    {
-        QJsonValue currentValue = currentObject->value(keys[i]);
-        if (currentValue.isObject())
-        {
-            currentObject = const_cast<QJsonObject *>(&(currentValue.toObject()));
-        }
-        else
-        {
-            QJsonObject newObject;
-            currentObject->insert(keys[i], newObject);
-            currentObject = &newObject;
-        }
-    }
-    currentObject->insert(keys.last(), value);
-}
+        QString currentKey = it.key();
+        QJsonValue value = it.value();
 
-bool JSONHandler::writeJsonFileStream(const QString &filePath, const QJsonObject &jsonObject)
-{
-    QFile file(filePath);
-    if (!file.open(QIODevice::WriteOnly | QIODevice::Text))
-    {
-        qDebug() << "Unable to open file for writing:" << file.errorString();
-        return false;
-    }
+        // 打印当前键
+        qDebug() << prefix + currentKey;
 
-    QTextStream out(&file);
-    out.setCodec("UTF-8");
-    out << "{\n";
-
-    QStringList keys = jsonObject.keys();
-    for (int i = 0; i < keys.size(); ++i)
-    {
-        QString key = keys[i];
-        QJsonValue value = jsonObject.value(key);
-
-        out << "\"" << key << "\": ";
-
+        // 如果当前值是一个嵌套的对象，递归打印
         if (value.isObject())
         {
-            out << QString(QJsonDocument(value.toObject()).toJson(QJsonDocument::Compact));
+            printJsonObject(value.toObject(), prefix + currentKey + ".");
         }
         else if (value.isArray())
         {
-            out << QString(QJsonDocument(value.toArray()).toJson(QJsonDocument::Compact));
+            // 如果当前值是一个数组，打印数组的每个元素（数组元素不是对象则直接打印）
+            const QJsonArray array = value.toArray();
+            for (int i = 0; i < array.size(); ++i)
+            {
+                QJsonValue arrayValue = array.at(i);
+                if (arrayValue.isObject())
+                {
+                    // 嵌套对象，递归打印
+                    qDebug() << prefix + currentKey + "[" + QString::number(i) + "] = {...}";
+                    printJsonObject(arrayValue.toObject(), prefix + currentKey + "[" + QString::number(i) + "].");
+                }
+                else
+                {
+                    // 打印数组元素
+                    qDebug() << prefix + currentKey + "[" + QString::number(i) + "] = " + arrayValue.toString();
+                }
+            }
         }
         else
         {
-            out << QString(QJsonDocument(QJsonObject{{key, value}}).toJson(QJsonDocument::Compact)).mid(key.length() + 4);
-        }
-
-        if (i < keys.size() - 1)
-        {
-            out << ",\n";
+            // 打印值
+            qDebug() << "  " + value.toString();
         }
     }
+}
+void JSONHandler::setvalue(QJsonObject &jsonObj, const QStringList &keys, const QJsonValue &value)
+{
+    if (keys.isEmpty())
+    {
+        return;
+    }
 
-    out << "\n}\n";
-    file.close();
-    return true;
+    QString key = keys.first();
+
+    if (keys.size() == 1)
+    {
+        // 最后一级键，直接设置值
+        jsonObj[key] = value;
+    }
+    else
+    {
+        // 获取下一层对象，如果不存在则创建一个新的 QJsonObject
+        QJsonObject nestedObj = jsonObj.value(key).toObject();
+        QStringList remainingKeys = keys.mid(1);
+
+        // 递归调用设置值
+        setvalue(nestedObj, remainingKeys, value);
+
+        // 更新当前层对象
+        jsonObj[key] = nestedObj;
+    }
+}
+// 删除嵌套键值的函数
+bool JSONHandler::removevalue(QJsonObject &jsonObj, const QStringList &keys)
+{
+    if (keys.isEmpty())
+    {
+        return false;
+    }
+
+    QString key = keys.first();
+    if (keys.size() == 1)
+    {
+        // 最后一级键，删除值
+        if (jsonObj.contains(key))
+        {
+            jsonObj.remove(key);
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
+    else
+    {
+        // 获取下一层对象
+        QJsonObject nestedObj = jsonObj[key].toObject();
+        QStringList remainingKeys = keys.mid(1);
+
+        // 递归调用删除值
+        bool result = removevalue(nestedObj, remainingKeys);
+
+        // 如果内部键值被成功删除，更新当前层对象
+        if (result)
+        {
+            if (nestedObj.isEmpty())
+            {
+                jsonObj.remove(key); // 如果删除后对象为空，移除整个对象
+            }
+            else
+            {
+                jsonObj[key] = nestedObj; // 否则更新当前层对象
+            }
+        }
+
+        return result;
+    }
 }
