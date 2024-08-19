@@ -108,7 +108,7 @@ public:
         // 心形方程
         double xHeart = 16 * pow(sin(u), 3);
         double yHeart = 13 * cos(u) - 5 * cos(2 * u) - 2 * cos(3 * u) - cos(4 * u);
-        double zHeart = sin(u) * pow((1 - abs(-u / PI)), 2) * 8;
+        double zHeart = sin(u) * pow((1 - abs(-u / vtkMath::Pi())), 2) * 8;
 
         // 自定义的心形莫比乌斯环参数方程
         double R = 1.0 + 0.5 * v * cos(u / 2.0);
@@ -121,10 +121,10 @@ public:
         double duR = -0.25 * v * sin(u / 2.0);
         double duX = duR * xHeart + R * 48 * pow(sin(u), 2) * cos(u);
         double duY = duR * yHeart - R * (13 * sin(u) - 10 * sin(2 * u) - 6 * sin(3 * u) - 4 * sin(4 * u));
-        double abs_u_over_pi = std::fabs(-u / PI);
+        double abs_u_over_pi = std::fabs(-u / vtkMath::Pi());
         double term1 = std::sin(u);
         double term2 = (1 - abs_u_over_pi);
-        double term3 = 2 * (1 - abs_u_over_pi) * (-1 / PI);
+        double term3 = 2 * (1 - abs_u_over_pi) * (-1 / vtkMath::Pi());
         double duZ = 8 * (term1 * term2 * term3 + std::cos(u) * term2 * term2);
 
         double dvR = 0.5 * cos(u / 2.0);
