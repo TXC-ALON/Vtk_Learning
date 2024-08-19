@@ -1,0 +1,17 @@
+{
+    "name": "Alice",
+    "age": 30,
+    "email": "alice@example.com",
+    "skills": [
+        "C++",
+        "Qt",
+        "JSON"
+    ],
+    "address": {
+        "street": "123 Main Stzz",
+        "location": {
+            "city": "Wonderland",
+            "country": "Earth"
+        }
+    }
+}
