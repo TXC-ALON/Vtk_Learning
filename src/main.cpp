@@ -17,15 +17,10 @@
 #include "Mainwindow.h"
 #include <Eigen/Dense>
 #include <stl.h>
+#include <JsonHandler.h>
 
 int main(int argc, char *argv[])
 {
-    stl_vertex test;
-    test.x = 1;
-    test.y = 1.8;
-    test.z = 1.999;
-    test.stl_scale(2);
-    std::cout << test.x << std::endl;
     QApplication app(argc, argv);
     MainWindow mainWindow;
     mainWindow.show();
