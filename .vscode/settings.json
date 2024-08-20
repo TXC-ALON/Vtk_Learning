@@ -95,7 +95,8 @@
         "strstream": "cpp",
         "typeindex": "cpp",
         "unordered_set": "cpp",
-        "valarray": "cpp"
+        "valarray": "cpp",
+        "stack": "cpp"
     },
     "workbench.editor.wrapTabs": true
 }
