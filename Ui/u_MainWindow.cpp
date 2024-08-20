@@ -67,7 +67,61 @@ vtkSmartPointer<vtkPoints> ReadBedShapeFromFile(const std::string &filePath)
 
     return points;
 }
+void add_bedshape_polylines(double *bounds, vtkSmartPointer<vtkRenderer> renderer)
+{
+    // 获取边界盒
+    vtkSmartPointer<vtkPolyData> polyData = vtkSmartPointer<vtkPolyData>::New();
+    // XY平面的间距
+    double xSpacing = 10.0; // 例如，每隔1个单位添加一条水平线
+    double ySpacing = 10.0; // 每隔1个单位添加一条垂直线
 
+    // 创建点和线
+    vtkSmartPointer<vtkPoints> points = vtkSmartPointer<vtkPoints>::New();
+    vtkSmartPointer<vtkCellArray> lines = vtkSmartPointer<vtkCellArray>::New();
+
+    // 添加水平线
+    for (double x = bounds[0]; x <= bounds[1]; x += xSpacing)
+    {
+        for (double y = bounds[2]; y <= bounds[3]; y += ySpacing)
+        {
+            // 每隔ySpacing添加一条垂直线
+            points->InsertNextPoint(x, y, 0.0); // 假设在XY平面
+            points->InsertNextPoint(x, y + ySpacing, 0.0);
+            lines->InsertNextCell(2);
+            lines->InsertCellPoint(points->GetNumberOfPoints() - 2);
+            lines->InsertCellPoint(points->GetNumberOfPoints() - 1);
+        }
+    }
+
+    // 添加垂直线
+    for (double y = bounds[2]; y <= bounds[3]; y += ySpacing)
+    {
+        for (double x = bounds[0]; x <= bounds[1]; x += xSpacing)
+        {
+            // 每隔xSpacing添加一条水平线
+            points->InsertNextPoint(x, y, 0.0);
+            points->InsertNextPoint(x + xSpacing, y, 0.0);
+            lines->InsertNextCell(2);
+            lines->InsertCellPoint(points->GetNumberOfPoints() - 2);
+            lines->InsertCellPoint(points->GetNumberOfPoints() - 1);
+        }
+    }
+
+    // 将点和线添加到PolyData
+    polyData->SetPoints(points);
+    polyData->SetLines(lines);
+
+    // 创建Mapper和Actor
+    vtkSmartPointer<vtkPolyDataMapper> mapper = vtkSmartPointer<vtkPolyDataMapper>::New();
+    mapper->SetInputData(polyData);
+
+    vtkSmartPointer<vtkActor> actor = vtkSmartPointer<vtkActor>::New();
+    actor->SetMapper(mapper);
+
+    // 设置颜色等属性
+    actor->GetProperty()->SetColor(0, 0, 0);
+    renderer->AddActor(actor);
+}
 void add_bedshape(vtkSmartPointer<vtkRenderer> renderer)
 {
     std::string filePath = BEDSHAPE_PATH; // 替换为你的文件路径
@@ -102,6 +156,8 @@ void add_bedshape(vtkSmartPointer<vtkRenderer> renderer)
     actor->GetProperty()->SetColor(0.7412, 0.7451, 0.6667); //
     // actor->GetProperty()->SetOpacity(0.5); // 0.5表示50%的透明度
     renderer->AddActor(actor);
+    double *bounds = polygonPolyData->GetBounds();
+    add_bedshape_polylines(bounds, renderer);
 }
 // 将一组字符串形式的二维点转换为 vtkPoints
 
