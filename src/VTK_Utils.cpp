@@ -179,11 +179,11 @@ void Add_Arrow_Axes(vtkSmartPointer<vtkRenderer> renderer, double scaleFactor)
 void Add_Line_Axes(vtkSmartPointer<vtkRenderer> renderer, double scaleFactor)
 {
     vtkNew<vtkAxes> modelAxesSource;
-    modelAxesSource->SetScaleFactor(20);
+    modelAxesSource->SetScaleFactor(scaleFactor);
     modelAxesSource->SetOrigin(0, 0, 0);
     vtkNew<vtkTubeFilter> tubeFilter;
     tubeFilter->SetInputConnection(modelAxesSource->GetOutputPort());
-    tubeFilter->SetRadius(0.05);
+    tubeFilter->SetRadius(0.5);
     tubeFilter->SetNumberOfSides(50);
 
     vtkNew<vtkPolyDataMapper> modelAxesMapper;

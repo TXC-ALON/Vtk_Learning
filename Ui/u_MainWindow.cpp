@@ -78,35 +78,48 @@ void add_bedshape_polylines(double *bounds, vtkSmartPointer<vtkRenderer> rendere
     // 创建点和线
     vtkSmartPointer<vtkPoints> points = vtkSmartPointer<vtkPoints>::New();
     vtkSmartPointer<vtkCellArray> lines = vtkSmartPointer<vtkCellArray>::New();
+    double x_grid_min = bounds[0];
+    double x_grid_max = bounds[1];
+    double y_grid_min = bounds[2];
+    double y_grid_max = bounds[3];
+    x_grid_min = std::floor(x_grid_min / xSpacing) * xSpacing;
+    x_grid_max = std::ceil(x_grid_max / xSpacing) * xSpacing;
 
+    y_grid_min = std::floor(y_grid_min / ySpacing) * ySpacing;
+    y_grid_max = std::ceil(y_grid_max / ySpacing) * ySpacing;
+    int numPointsX = static_cast<int>((x_grid_max - x_grid_min) / xSpacing);
+    int numPointsY = static_cast<int>((y_grid_max - y_grid_min) / ySpacing);
+    std::cout << "x_grid_min is " << x_grid_min << std::endl;
+    std::cout << "x_grid_max is " << x_grid_max << std::endl;
+    std::cout << "y_grid_min is " << y_grid_min << std::endl;
+    std::cout << "y_grid_max is " << y_grid_max << std::endl;
+
+    std::cout << "numPointsX is " << numPointsX << std::endl;
+    std::cout << "numPointsY is " << numPointsY << std::endl;
     // 添加水平线
-    for (double x = bounds[0]; x <= bounds[1]; x += xSpacing)
+    for (int i = 0; i <= numPointsX; i++)
     {
-        for (double y = bounds[2]; y <= bounds[3]; y += ySpacing)
-        {
-            // 每隔ySpacing添加一条垂直线
-            points->InsertNextPoint(x, y, 0.0); // 假设在XY平面
-            points->InsertNextPoint(x, y + ySpacing, 0.0);
-            lines->InsertNextCell(2);
-            lines->InsertCellPoint(points->GetNumberOfPoints() - 2);
-            lines->InsertCellPoint(points->GetNumberOfPoints() - 1);
-        }
+        points->InsertNextPoint(x_grid_min + xSpacing * i, y_grid_min, 0.0); // 假设在XY平面
+        points->InsertNextPoint(x_grid_min + xSpacing * i, y_grid_max, 0.0);
+        lines->InsertNextCell(2);
+        lines->InsertCellPoint(points->GetNumberOfPoints() - 2);
+        lines->InsertCellPoint(points->GetNumberOfPoints() - 1);
     }
 
-    // 添加垂直线
-    for (double y = bounds[2]; y <= bounds[3]; y += ySpacing)
+    for (int i = 0; i <= numPointsY; i++)
     {
-        for (double x = bounds[0]; x <= bounds[1]; x += xSpacing)
-        {
-            // 每隔xSpacing添加一条水平线
-            points->InsertNextPoint(x, y, 0.0);
-            points->InsertNextPoint(x + xSpacing, y, 0.0);
-            lines->InsertNextCell(2);
-            lines->InsertCellPoint(points->GetNumberOfPoints() - 2);
-            lines->InsertCellPoint(points->GetNumberOfPoints() - 1);
-        }
+        points->InsertNextPoint(x_grid_min, y_grid_min + ySpacing * i, 0.0); // 假设在XY平面
+        points->InsertNextPoint(x_grid_max, y_grid_min + ySpacing * i, 0.0);
+        lines->InsertNextCell(2);
+        lines->InsertCellPoint(points->GetNumberOfPoints() - 2);
+        lines->InsertCellPoint(points->GetNumberOfPoints() - 1);
     }
-
+    for (vtkIdType i = 0; i < points->GetNumberOfPoints(); i++)
+    {
+        double point[3];
+        points->GetPoint(i, point); // 获取第i个点的坐标
+        std::cout << "Point " << i << ": (" << point[0] << ", " << point[1] << ", " << point[2] << ")" << std::endl;
+    }
     // 将点和线添加到PolyData
     polyData->SetPoints(points);
     polyData->SetLines(lines);
@@ -214,7 +227,7 @@ void Ui_MainWindow::setupUi(QMainWindow *MainWindow)
     vtkWidget->interactor()->AddObserver(vtkCommand::KeyPressEvent, keycallback);
     // 添加坐标轴
     // Add_Arrow_Axes(vtkWidget->m_renderer, 15);
-    Add_Line_Axes(vtkWidget->m_renderer, 15);
+    Add_Line_Axes(vtkWidget->m_renderer, 140);
 
     add_bedshape(vtkWidget->m_renderer);
 }
