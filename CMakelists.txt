@@ -134,9 +134,6 @@ if (WIN32)
 endif()
 add_executable(${PROJECT_NAME} ${SOURCE_FILES} ${HEADER_FILES} ${P3DS_DIR_SOURCES} ${ThreeD_Files})
 
-# 链接到 P3DS 接口库
-target_link_libraries(${PROJECT_NAME} P3DS)
-
 target_include_directories(${PROJECT_NAME} PUBLIC ${PROJECT_INCLUDE})
 target_include_directories(${PROJECT_NAME} PUBLIC ${Boost_INCLUDE_DIRS})
 target_include_directories(${PROJECT_NAME} PUBLIC ${VTK_INCLUDE})
@@ -163,7 +160,6 @@ target_include_directories(${PROJECT_NAME} PUBLIC ${EIGEN_PATH})
 target_link_libraries(${PROJECT_NAME} ${QT_MODULES})
 target_link_libraries(${PROJECT_NAME} ${VTK_LIBRARIES})
 target_link_libraries(${PROJECT_NAME} ${Boost_LIBRARIES})
-target_link_libraries(${PROJECT_NAME} ${P3DS_DIR_HEADERS})
 
 
 # # vtk_module_autoinit is needed
