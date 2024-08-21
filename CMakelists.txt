@@ -6,7 +6,7 @@ project(Qt5_test VERSION 1.0)
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTOUIC ON)
 # 设置C++标准
-set(CMAKE_CXX_STANDARD 14)
+set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 # 设定基本路径
 set(Dev_PREFIX "D:/Dev")
@@ -118,32 +118,52 @@ foreach(item IN LISTS HEADER_FILES)
     message(STATUS " --HEADER_FILES item: ${item}")
 endforeach()
 
-set(ADMESH ${CMAKE_CURRENT_SOURCE_DIR}/P3DS/admesh)
-message("ADMESH is ${ADMESH}")
-file(GLOB_RECURSE ADMESH_FILES ${ADMESH}/*)
-foreach(item IN LISTS ADMESH_FILES)
-    message(STATUS " ADMESH_FILES item: ${item}")
-endforeach()
 message("ThreeDAXE_PATH = ${ThreeDAXE_PATH}")
 file(GLOB ThreeD_Files "${ThreeDAXE_PATH}/*.cpp") # 假设源文件在名为"src"的子目录下
 # foreach(item IN LISTS ThreeD_Files)
 #     message(STATUS " ThreeD_Files item: ${item}")
 # endforeach()
 # 项目名称
-add_executable(${PROJECT_NAME} ${SOURCE_FILES} ${HEADER_FILES} ${ADMESH_FILES} ${ThreeD_Files})
+set(P3DS_PATH ${CMAKE_CURRENT_SOURCE_DIR}/P3DS)
+message("P3DS_PATH : ${P3DS_PATH}")
+
+add_subdirectory(P3DS)
+
+if (WIN32)
+    add_definitions(-DNOMINMAX)
+endif()
+add_executable(${PROJECT_NAME} ${SOURCE_FILES} ${HEADER_FILES} ${P3DS_DIR_SOURCES} ${ThreeD_Files})
+
+# 链接到 P3DS 接口库
+target_link_libraries(${PROJECT_NAME} P3DS)
+
 target_include_directories(${PROJECT_NAME} PUBLIC ${PROJECT_INCLUDE})
 target_include_directories(${PROJECT_NAME} PUBLIC ${Boost_INCLUDE_DIRS})
 target_include_directories(${PROJECT_NAME} PUBLIC ${VTK_INCLUDE})
-target_include_directories(${PROJECT_NAME} PUBLIC ${ADMESH})
 target_include_directories(${PROJECT_NAME} PUBLIC ${ThreeDAXE_PATH})
 
-
+set(ADDED_DIRS "")
+# 获取所有头文件目录
+file(GLOB_RECURSE HEADER_DIRS RELATIVE ${CMAKE_SOURCE_DIR} "${CMAKE_SOURCE_DIR}/P3DS/*")
+# 遍历每个子目录并将其添加为目标的包含目录
+foreach(subdir ${HEADER_DIRS})
+  get_filename_component(subdir_dir "${subdir}" DIRECTORY)
+    list(FIND ADDED_DIRS "${subdir_dir}" index)
+    if (index EQUAL -1)
+        # 如果目录未添加，则添加到列表中，并添加为目标的包含目录
+        list(APPEND ADDED_DIRS "${subdir_dir}")
+        message("Adding directory: ${subdir_dir}")
+        target_include_directories(${PROJECT_NAME} PUBLIC "${subdir_dir}")
+    else()
+        #message("Directory already added: ${subdir_dir}")
+    endif()
+endforeach()
 ## 直接包含编译
 target_include_directories(${PROJECT_NAME} PUBLIC ${EIGEN_PATH})
-
 target_link_libraries(${PROJECT_NAME} ${QT_MODULES})
 target_link_libraries(${PROJECT_NAME} ${VTK_LIBRARIES})
 target_link_libraries(${PROJECT_NAME} ${Boost_LIBRARIES})
+target_link_libraries(${PROJECT_NAME} ${P3DS_DIR_HEADERS})
 
 
 # # vtk_module_autoinit is needed

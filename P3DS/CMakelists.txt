@@ -1,0 +1,14 @@
+# 收集头文件和源文件
+file(GLOB_RECURSE P3DS_HEADER_FILES "*.hpp" "*.h")
+file(GLOB_RECURSE P3DS_SOURCE_FILES "*.cpp" "*.cc")
+foreach(item IN LISTS P3DS_HEADER_FILES)
+    message(STATUS " P3DS_HEADER_FILES item: ${item}")
+endforeach()
+
+foreach(item IN LISTS P3DS_SOURCE_FILES)
+    message(STATUS " P3DS_SOURCE_FILES item: ${item}")
+endforeach()
+
+# 将文件列表传递给父目录
+set(P3DS_DIR_HEADERS ${P3DS_HEADER_FILES} PARENT_SCOPE)
+set(P3DS_DIR_SOURCES ${P3DS_SOURCE_FILES} PARENT_SCOPE)
