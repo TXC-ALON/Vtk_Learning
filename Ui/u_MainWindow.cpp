@@ -15,6 +15,7 @@
 #include <sstream>
 #include <string>
 #include <vtkPoints.h>
+#include <vtkTriangleFilter.h>
 #define BEDSHAPE_PATH "D:/0Learning/Vtk/0805_qt5_vtk/resource/bedshape/bedshape.ini"
 
 // 将单个点对字符串转换为 vtkPoints 的点
@@ -24,7 +25,18 @@ void InsertPointIntoVtkPoints(vtkSmartPointer<vtkPoints> points, const std::stri
     std::string modifiedPair = pointPair;
     std::replace(modifiedPair.begin(), modifiedPair.end(), 'x', ' '); // 将 'x' 替换为空格
     std::istringstream pointStream(modifiedPair);
-    pointStream >> x >> y;              // 读取 x 和 y 坐标
+    pointStream >> x >> y; // 读取 x 和 y 坐标
+    std::cout << x << " " << y << std::endl;
+    for (vtkIdType i = 0; i < points->GetNumberOfPoints(); i++)
+    {
+        double point[3];
+        points->GetPoint(i, point); // 获取第i个点的坐标
+        // std::cout << "check Point " << i << ": (" << point[0] << ", " << point[1] << ", " << point[2] << ")" << std::endl;
+        if (fabs(point[0] - x) < 0.0001 && fabs(point[1] - y) < 0.0001)
+        {
+            return; // 不插入重复的点
+        }
+    }
     points->InsertNextPoint(x, y, 0.0); // 插入点到 vtkPoints，假设 z 坐标为 0
 }
 
@@ -57,6 +69,12 @@ vtkSmartPointer<vtkPoints> ReadBedShapeFromFile(const std::string &filePath)
                     }
                 }
             }
+        }
+        for (vtkIdType i = 0; i < points->GetNumberOfPoints(); i++)
+        {
+            double point[3];
+            points->GetPoint(i, point); // 获取第i个点的坐标
+            std::cout << "Point " << i << ": (" << point[0] << ", " << point[1] << ", " << point[2] << ")" << std::endl;
         }
         file.close();
     }
@@ -149,27 +167,30 @@ void add_bedshape(vtkSmartPointer<vtkRenderer> renderer)
         polygon->GetPointIds()->SetId(i, i); // 将每个点的 ID 添加到多边形
     }
 
-    // Add the polygon to a list of polygons
-    vtkNew<vtkCellArray> polygons;
-    polygons->InsertNextCell(polygon);
+    vtkSmartPointer<vtkCellArray> cells = vtkSmartPointer<vtkCellArray>::New();
+    cells->InsertNextCell(polygon);
 
-    // Create a PolyData
-    vtkNew<vtkPolyData> polygonPolyData;
-    polygonPolyData->SetPoints(vtkPoints);
-    polygonPolyData->SetPolys(polygons);
+    vtkSmartPointer<vtkPolyData> polyData = vtkSmartPointer<vtkPolyData>::New();
+    polyData->SetPoints(vtkPoints);
+    polyData->SetPolys(cells);
+
+    vtkSmartPointer<vtkTriangleFilter> triangleFilter = vtkSmartPointer<vtkTriangleFilter>::New();
+    triangleFilter->SetInputData(polyData);
+    triangleFilter->Update();
 
     // Create a mapper and actor
-    vtkNew<vtkPolyDataMapper> mapper;
-    mapper->SetInputData(polygonPolyData);
+    vtkSmartPointer<vtkPolyDataMapper> mapper = vtkSmartPointer<vtkPolyDataMapper>::New();
+    mapper->SetInputConnection(triangleFilter->GetOutputPort());
 
     vtkNew<vtkActor> actor;
     actor->SetMapper(mapper);
-    // actor->GetProperty()->SetEdgeVisibility(true);
+    actor->GetProperty()->SetEdgeVisibility(true);
     // actor->GetProperty()->SetRepresentationToSurface();
     actor->GetProperty()->SetColor(0.7412, 0.7451, 0.6667); //
     // actor->GetProperty()->SetOpacity(0.5); // 0.5表示50%的透明度
     renderer->AddActor(actor);
-    double *bounds = polygonPolyData->GetBounds();
+
+    double *bounds = actor->GetBounds();
     add_bedshape_polylines(bounds, renderer);
 }
 // 将一组字符串形式的二维点转换为 vtkPoints

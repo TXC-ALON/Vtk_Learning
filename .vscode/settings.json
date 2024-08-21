@@ -96,7 +96,15 @@
         "typeindex": "cpp",
         "unordered_set": "cpp",
         "valarray": "cpp",
-        "stack": "cpp"
+        "stack": "cpp",
+        "any": "cpp",
+        "bitset": "cpp",
+        "codecvt": "cpp",
+        "coroutine": "cpp",
+        "filesystem": "cpp",
+        "memory_resource": "cpp",
+        "ranges": "cpp",
+        "span": "cpp"
     },
     "workbench.editor.wrapTabs": true
 }
