@@ -97,6 +97,7 @@ public:
     VtkWidget3D *vtkWidget;
     QPushButton *openFileButton;
     QPushButton *rotateButton;
+    QComboBox *bedshapesComboBox;
     QPushButton *ShowAxesButton;
     QDoubleSpinBox *doubleSpinBox_Type;
     vtkSmartPointer<vtkAxesActor> Axes;
@@ -105,8 +106,10 @@ public:
     vtkSmartPointer<vtkRenderWindowInteractor> renderWindowInteractor;
     ThreeDAxesCallback *callback = nullptr;
     ThreeDAxesWidget *rotateWidget;
+    std::map<std::string, std::string> baseMap;
 
 public:
+    void read_bedshapes(std::string filepath);
     void setupUi(QMainWindow *MainWindow);
 };
 namespace Ui

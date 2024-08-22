@@ -189,7 +189,10 @@ void MainWindow::RotateSlot()
     pRotateWidget->setVisible(true);
     pRotateWidget->InitOpenPage();
 }
-
+void MainWindow::openPlatSelectSlot()
+{
+    std::cout << "openPlatSelectSlot" << std::endl;
+}
 void MainWindow::connectSignals(QWidget *widget)
 {
     // setAcceptDrops(true);
@@ -199,8 +202,14 @@ void MainWindow::connectSignals(QWidget *widget)
     connect(ui->rotateButton, &QPushButton::clicked, this, &MainWindow::RotateSlot);
     connect(ui->openFileButton, &QPushButton::clicked, this, &MainWindow::openFileSlot);
     connect(ui->ShowAxesButton, &QPushButton::clicked, this, &MainWindow::ShowAxes);
+    connect(ui->bedshapesComboBox, &QComboBox::currentTextChanged, this, &MainWindow::onSelectionChanged);
 }
-
+void MainWindow::onSelectionChanged()
+{
+    QString selectedBedShape = ui->bedshapesComboBox->currentText();
+    std::string bedshape_str = ui->baseMap[selectedBedShape.toStdString()];
+    std::cout << "Base Name: " << selectedBedShape.toStdString() << ", Base Data: " << bedshape_str << std::endl;
+}
 void MainWindow::setupWidget(QWidget *widget)
 {
     QIcon icon("D:/0Learning/Vtk/0805_qt5_vtk/resource/Proslice.ico");

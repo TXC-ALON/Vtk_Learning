@@ -111,7 +111,7 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/bin)
 message("VTK_INCLUDE is ${VTK_INCLUDE}")
 message("${Boost_LIBRARIES}")
 foreach(item IN LISTS ${Boost_LIBRARIES})
-    message(STATUS " Boost_LIBRARIES item: ${item}")
+    message(STATUS "Boost_LIBRARIES item: ${item}")
 endforeach()
 
 foreach(item IN LISTS HEADER_FILES)

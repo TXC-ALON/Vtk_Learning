@@ -104,7 +104,8 @@
         "filesystem": "cpp",
         "memory_resource": "cpp",
         "ranges": "cpp",
-        "span": "cpp"
+        "span": "cpp",
+        "*.ipp": "cpp"
     },
     "workbench.editor.wrapTabs": true
 }

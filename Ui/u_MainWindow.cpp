@@ -16,6 +16,8 @@
 #include <string>
 #include <vtkPoints.h>
 #include <vtkTriangleFilter.h>
+#include <Toys.h>
+#include "Qt_headers.h"
 #define BEDSHAPE_PATH "D:/0Learning/Vtk/0805_qt5_vtk/resource/bedshape/bedshape.ini"
 
 // 将单个点对字符串转换为 vtkPoints 的点
@@ -26,7 +28,7 @@ void InsertPointIntoVtkPoints(vtkSmartPointer<vtkPoints> points, const std::stri
     std::replace(modifiedPair.begin(), modifiedPair.end(), 'x', ' '); // 将 'x' 替换为空格
     std::istringstream pointStream(modifiedPair);
     pointStream >> x >> y; // 读取 x 和 y 坐标
-    std::cout << x << " " << y << std::endl;
+    // std::cout << x << " " << y << std::endl;
     for (vtkIdType i = 0; i < points->GetNumberOfPoints(); i++)
     {
         double point[3];
@@ -41,7 +43,7 @@ void InsertPointIntoVtkPoints(vtkSmartPointer<vtkPoints> points, const std::stri
 }
 
 // 从指定路径读取txt文件并将点数据直接插入 vtkPoints
-vtkSmartPointer<vtkPoints> ReadBedShapeFromFile(const std::string &filePath)
+vtkSmartPointer<vtkPoints> ReadBedShapeFromFile(const std::string &filePath, std::vector<Point> &boost_points)
 {
     vtkSmartPointer<vtkPoints> points = vtkSmartPointer<vtkPoints>::New();
     std::ifstream file(filePath);
@@ -70,12 +72,12 @@ vtkSmartPointer<vtkPoints> ReadBedShapeFromFile(const std::string &filePath)
                 }
             }
         }
-        for (vtkIdType i = 0; i < points->GetNumberOfPoints(); i++)
-        {
-            double point[3];
-            points->GetPoint(i, point); // 获取第i个点的坐标
-            std::cout << "Point " << i << ": (" << point[0] << ", " << point[1] << ", " << point[2] << ")" << std::endl;
-        }
+        // for (vtkIdType i = 0; i < points->GetNumberOfPoints(); i++)
+        // {
+        //     double point[3];
+        //     points->GetPoint(i, point); // 获取第i个点的坐标
+        //     std::cout << "Point " << i << ": (" << point[0] << ", " << point[1] << ", " << point[2] << ")" << std::endl;
+        // }
         file.close();
     }
     else
@@ -83,6 +85,14 @@ vtkSmartPointer<vtkPoints> ReadBedShapeFromFile(const std::string &filePath)
         std::cerr << "无法打开文件: " << filePath << std::endl;
     }
 
+    for (vtkIdType i = 0; i < points->GetNumberOfPoints(); i++)
+    {
+        double point[3];
+        points->GetPoint(i, point); // 获取第i个点的坐标
+        Point tempPoint;
+        tempPoint = Point(point[0], point[1]);
+        boost_points.push_back(tempPoint);
+    }
     return points;
 }
 void add_bedshape_polylines(double *bounds, vtkSmartPointer<vtkRenderer> renderer)
@@ -132,12 +142,12 @@ void add_bedshape_polylines(double *bounds, vtkSmartPointer<vtkRenderer> rendere
         lines->InsertCellPoint(points->GetNumberOfPoints() - 2);
         lines->InsertCellPoint(points->GetNumberOfPoints() - 1);
     }
-    for (vtkIdType i = 0; i < points->GetNumberOfPoints(); i++)
-    {
-        double point[3];
-        points->GetPoint(i, point); // 获取第i个点的坐标
-        std::cout << "Point " << i << ": (" << point[0] << ", " << point[1] << ", " << point[2] << ")" << std::endl;
-    }
+    // for (vtkIdType i = 0; i < points->GetNumberOfPoints(); i++)
+    // {
+    //     double point[3];
+    //     points->GetPoint(i, point); // 获取第i个点的坐标
+    //     std::cout << "Point " << i << ": (" << point[0] << ", " << point[1] << ", " << point[2] << ")" << std::endl;
+    // }
     // 将点和线添加到PolyData
     polyData->SetPoints(points);
     polyData->SetLines(lines);
@@ -153,10 +163,54 @@ void add_bedshape_polylines(double *bounds, vtkSmartPointer<vtkRenderer> rendere
     actor->GetProperty()->SetColor(0, 0, 0);
     renderer->AddActor(actor);
 }
+void add_polylines(std::vector<Segment> segments, vtkSmartPointer<vtkRenderer> renderer)
+{
+    vtkSmartPointer<vtkPoints> points = vtkSmartPointer<vtkPoints>::New();
+    vtkSmartPointer<vtkCellArray> lines = vtkSmartPointer<vtkCellArray>::New();
+    for (const auto &segment : segments)
+    {
+        const Point &p1 = segment.first;              // 获取线段的起点
+        const Point &p2 = segment.second;             // 获取线段的终点
+        points->InsertNextPoint(p1.x(), p1.y(), 0.0); // 假设在XY平面
+        points->InsertNextPoint(p2.x(), p2.y(), 0.0); // 假设在XY平面
+        lines->InsertNextCell(2);
+        lines->InsertCellPoint(points->GetNumberOfPoints() - 2);
+        lines->InsertCellPoint(points->GetNumberOfPoints() - 1);
+        std::cout << "Segment from (" << p1.x() << ", " << p1.y() << ") to (" << p2.x() << ", " << p2.y() << ")" << std::endl;
+    }
+    vtkSmartPointer<vtkPolyData> polyData = vtkSmartPointer<vtkPolyData>::New();
+    // 将点和线添加到PolyData
+    polyData->SetPoints(points);
+    polyData->SetLines(lines);
+
+    // 创建Mapper和Actor
+    vtkSmartPointer<vtkPolyDataMapper> mapper = vtkSmartPointer<vtkPolyDataMapper>::New();
+    mapper->SetInputData(polyData);
+
+    vtkSmartPointer<vtkActor> actor = vtkSmartPointer<vtkActor>::New();
+    actor->SetMapper(mapper);
+
+    // 设置颜色等属性
+    actor->GetProperty()->SetColor(0, 0, 0);
+    renderer->AddActor(actor);
+}
+
 void add_bedshape(vtkSmartPointer<vtkRenderer> renderer)
 {
     std::string filePath = BEDSHAPE_PATH; // 替换为你的文件路径
-    vtkSmartPointer<vtkPoints> vtkPoints = ReadBedShapeFromFile(filePath);
+    std::vector<Point> boost_points;
+    vtkSmartPointer<vtkPoints> vtkPoints = ReadBedShapeFromFile(filePath, boost_points);
+    std::cout << "boost_points size is " << boost_points.size() << std::endl;
+    Boost_Polygon temp_poly = Boost_Polygon(boost_points);
+    std::vector<Segment> segments = temp_poly.generateGridLines(10);
+    // 遍历线段向量并打印每个线段的端点
+    for (const auto &segment : segments)
+    {
+        const Point &p1 = segment.first;  // 获取线段的起点
+        const Point &p2 = segment.second; // 获取线段的终点
+
+        std::cout << "Segment from (" << p1.x() << ", " << p1.y() << ") to (" << p2.x() << ", " << p2.y() << ")" << std::endl;
+    }
     vtkSmartPointer<vtkPolygon> polygon = vtkSmartPointer<vtkPolygon>::New();
     vtkNew<vtkNamedColors> colors;
     int numPoints = vtkPoints->GetNumberOfPoints();
@@ -184,16 +238,67 @@ void add_bedshape(vtkSmartPointer<vtkRenderer> renderer)
 
     vtkNew<vtkActor> actor;
     actor->SetMapper(mapper);
-    actor->GetProperty()->SetEdgeVisibility(true);
+    // actor->GetProperty()->SetEdgeVisibility(true);
     // actor->GetProperty()->SetRepresentationToSurface();
     actor->GetProperty()->SetColor(0.7412, 0.7451, 0.6667); //
     // actor->GetProperty()->SetOpacity(0.5); // 0.5表示50%的透明度
     renderer->AddActor(actor);
 
     double *bounds = actor->GetBounds();
-    add_bedshape_polylines(bounds, renderer);
+    add_polylines(segments, renderer);
 }
 // 将一组字符串形式的二维点转换为 vtkPoints
+void Ui_MainWindow::read_bedshapes(std::string filepath)
+{
+    std::ifstream file(filepath); // 替换为你的文件路径
+
+    if (file.is_open())
+    {
+        std::string line;
+        while (getline(file, line))
+        {
+            std::istringstream iss(line);
+            std::string baseName, baseData;
+            std::string::size_type pos = line.find('=');
+
+            if (pos != std::string::npos)
+            { // 检查等号是否存在
+                // 确保等号不是行的最后一个字符
+                if (pos < line.length() - 1)
+                {
+                    getline(iss, baseName, '='); // 读取基台名
+                    iss >> baseData;             // 读取基台数据，这里使用>>而不是getline，因为getline在遇到分隔符后会停止
+                    baseData.erase(0, pos + 1);  // 移除等号以及之后的所有空白字符
+
+                    // 将结果存入map中
+                    baseMap[baseName] = baseData;
+                }
+            }
+        }
+        file.close();
+    }
+    else
+    {
+        std::cerr << "Unable to open file";
+    }
+
+    // // 打印map中的内容，以检查是否正确读取
+    // for (const auto &pair : baseMap)
+    // {
+    //     std::cout << "Base Name: " << pair.first << ", Base Data: " << pair.second << std::endl;
+    // }
+    if (!baseMap.empty())
+    {
+        bedshapesComboBox->clear();
+
+        // 将map中的键添加到下拉框中
+        for (const auto &pair : baseMap)
+        {
+            QString qStr = QString::fromStdString(pair.first);
+            bedshapesComboBox->addItem(qStr);
+        }
+    }
+}
 
 void Ui_MainWindow::setupUi(QMainWindow *MainWindow)
 {
@@ -217,8 +322,15 @@ void Ui_MainWindow::setupUi(QMainWindow *MainWindow)
     doubleSpinBox_Type->setMinimumSize(QSize(100, 25));
     doubleSpinBox_Type->setDecimals(0);
     doubleSpinBox_Type->setValue(1);
-
     dockLayout->addWidget(doubleSpinBox_Type);
+
+    bedshapesComboBox = new QComboBox(MainWindow);
+    bedshapesComboBox->setObjectName(QString::fromUtf8("bedshapesComboBox"));
+    bedshapesComboBox->setMinimumSize(QSize(300, 0));
+    bedshapesComboBox->setEditable(false);
+    bedshapesComboBox->setIconSize(QSize(16, 16));
+    dockLayout->addWidget(bedshapesComboBox);
+
     openFileButton = new QPushButton("Open", MainWindow);
     dockLayout->addWidget(openFileButton);
     rotateButton = new QPushButton("Rotate", MainWindow);

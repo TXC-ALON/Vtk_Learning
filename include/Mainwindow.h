@@ -35,7 +35,7 @@ public:
 private slots:
     void openFileSlot();
     void ShowAxes();
-    // void openPlatSelectSlot();
+    void openPlatSelectSlot();
     // void AutoRepairSlot();
     // void MoveSlot();
     void RotateSlot();
@@ -49,6 +49,7 @@ private slots:
         std::cout << "Render_Update" << std::endl;
         ui->vtkWidget->m_renderWindow->Render();
     }
+    void onSelectionChanged();
 
 private:
     void connectSignals(QWidget *widget);

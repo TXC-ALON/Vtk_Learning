@@ -1,6 +1,15 @@
 #pragma once
 #include <Vtk_headers.h>
-
+#include <boost/geometry.hpp>
+#include <boost/geometry/geometries/point_xy.hpp>
+#include <boost/geometry/geometries/polygon.hpp>
+#include <boost/geometry/geometries/segment.hpp>
+#include <boost/geometry/geometries/box.hpp>
+namespace bg = boost::geometry;
+typedef bg::model::d2::point_xy<double> Point;
+typedef bg::model::polygon<Point> bgPolygon;
+typedef bg::model::segment<Point> Segment;
+typedef bg::model::box<Point> Box;
 // 自定义的参数化莫比乌斯环类
 class CustomMobius : public vtkParametricFunction
 {
@@ -156,5 +165,69 @@ public:
     {
         // 对于这个示例，返回一个常量值
         return 0.0;
+    }
+};
+
+class Boost_Polygon
+{
+public:
+    Boost_Polygon(const std::vector<Point> &points)
+    {
+        for (const auto &point : points)
+        {
+            bg::append(polygon.outer(), point);
+        }
+        bg::correct(polygon);
+    }
+
+    std::vector<Segment> generateGridLines(double spacing)
+    {
+        std::vector<Segment> gridLines;
+
+        Box boundingBox;
+        bg::envelope(polygon, boundingBox);
+
+        double min_x = boundingBox.min_corner().x();
+        double min_y = boundingBox.min_corner().y();
+        double max_x = boundingBox.max_corner().x();
+        double max_y = boundingBox.max_corner().y();
+
+        // Generate horizontal lines
+        for (double y = min_y; y <= max_y; y += spacing)
+        {
+            Segment line(Point(min_x, y), Point(max_x, y));
+            addIntersectingSegments(line, gridLines);
+        }
+
+        // Generate vertical lines
+        for (double x = min_x; x <= max_x; x += spacing)
+        {
+            Segment line(Point(x, min_y), Point(x, max_y));
+            addIntersectingSegments(line, gridLines);
+        }
+
+        return gridLines;
+    }
+
+private:
+    bgPolygon polygon;
+
+    void addIntersectingSegments(const Segment &line, std::vector<Segment> &gridLines)
+    {
+        std::vector<Point> intersectionPoints;
+        bg::model::linestring<Point> linestring;
+        bg::append(linestring, line.first);
+        bg::append(linestring, line.second);
+
+        bg::intersection(polygon, linestring, intersectionPoints);
+
+        if (intersectionPoints.size() >= 2)
+        {
+            // 确保至少有两个点来形成线段
+            if (intersectionPoints.size() > 1)
+            {
+                gridLines.push_back(Segment(intersectionPoints[0], intersectionPoints[1]));
+            }
+        }
     }
 };
