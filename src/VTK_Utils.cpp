@@ -181,6 +181,7 @@ void Add_Line_Axes(vtkSmartPointer<vtkRenderer> renderer, double scaleFactor)
     vtkNew<vtkAxes> modelAxesSource;
     modelAxesSource->SetScaleFactor(scaleFactor);
     modelAxesSource->SetOrigin(0, 0, 0);
+
     vtkNew<vtkTubeFilter> tubeFilter;
     tubeFilter->SetInputConnection(modelAxesSource->GetOutputPort());
     tubeFilter->SetRadius(0.5);

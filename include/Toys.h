@@ -10,6 +10,7 @@ typedef bg::model::d2::point_xy<double> Point;
 typedef bg::model::polygon<Point> bgPolygon;
 typedef bg::model::segment<Point> Segment;
 typedef bg::model::box<Point> Box;
+
 // 自定义的参数化莫比乌斯环类
 class CustomMobius : public vtkParametricFunction
 {
@@ -191,7 +192,11 @@ public:
         double min_y = boundingBox.min_corner().y();
         double max_x = boundingBox.max_corner().x();
         double max_y = boundingBox.max_corner().y();
+        min_x = std::floor(min_x / spacing) * spacing;
+        max_x = std::ceil(max_x / spacing) * spacing;
 
+        min_y = std::floor(min_y / spacing) * spacing;
+        max_y = std::ceil(max_y / spacing) * spacing;
         // Generate horizontal lines
         for (double y = min_y; y <= max_y; y += spacing)
         {
@@ -220,14 +225,42 @@ private:
         bg::append(linestring, line.second);
 
         bg::intersection(polygon, linestring, intersectionPoints);
-
+        std::sort(intersectionPoints.begin(), intersectionPoints.end(),
+                  [](const Point &a, const Point &b)
+                  {
+                      // 首先按x坐标升序排列
+                      if (a.x() == b.x())
+                      {
+                          // 如果x坐标相同，则按y坐标升序排列
+                          return a.y() < b.y();
+                      }
+                      // 否则按x坐标升序排列
+                      return a.x() < b.x();
+                  });
         if (intersectionPoints.size() >= 2)
         {
-            // 确保至少有两个点来形成线段
-            if (intersectionPoints.size() > 1)
+            std::cout << "Segment size is " << intersectionPoints.size() << std::endl;
+            // 创建一个临时向量来存储所有交点对
+            std::vector<Segment> segmentsFromIntersections;
+
+            // 如果有偶数个交点，则按顺序配对并添加到向量中
+            for (std::size_t i = 0; i < intersectionPoints.size(); i += 2)
             {
-                gridLines.push_back(Segment(intersectionPoints[0], intersectionPoints[1]));
+                if (i + 1 < intersectionPoints.size())
+                {
+                    segmentsFromIntersections.emplace_back(intersectionPoints[i], intersectionPoints[i + 1]);
+                }
             }
+            if (intersectionPoints.size() >= 4)
+            {
+                for (std::size_t i = 0; i < intersectionPoints.size(); i += 2)
+                {
+                    std::cout << "multi Segment from (" << intersectionPoints[i].x() << ", " << intersectionPoints[i].y() << ") to ("
+                              << intersectionPoints[i + 1].x() << ", " << intersectionPoints[i + 1].y() << ")" << std::endl;
+                }
+            }
+            // 将有效的线段添加到最终的 gridLines 向量中
+            gridLines.insert(gridLines.end(), segmentsFromIntersections.begin(), segmentsFromIntersections.end());
         }
     }
 };

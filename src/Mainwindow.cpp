@@ -209,6 +209,8 @@ void MainWindow::onSelectionChanged()
     QString selectedBedShape = ui->bedshapesComboBox->currentText();
     std::string bedshape_str = ui->baseMap[selectedBedShape.toStdString()];
     std::cout << "Base Name: " << selectedBedShape.toStdString() << ", Base Data: " << bedshape_str << std::endl;
+    ui->add_bedshape2(bedshape_str, ui->vtkWidget->m_renderer);
+    ui->vtkWidget->m_renderWindow->Render();
 }
 void MainWindow::setupWidget(QWidget *widget)
 {

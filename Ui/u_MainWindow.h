@@ -11,7 +11,8 @@
 #include <ThreeDAxesRepresentation.h>
 #include <ThreeDAxesWidget.h>
 #include <VTK_Utils.h>
-
+#include <Toys.h>
+#define BEDSHAPES_PATH "D:/0Learning/Vtk/0805_qt5_vtk/resource/bedshape/bedshapes.ini"
 class ssCallback : public vtkCommand
 {
 public:
@@ -101,6 +102,9 @@ public:
     QPushButton *ShowAxesButton;
     QDoubleSpinBox *doubleSpinBox_Type;
     vtkSmartPointer<vtkAxesActor> Axes;
+    vtkSmartPointer<vtkActor> Bedshape = nullptr;
+    vtkSmartPointer<vtkActor> Bedshape_Polylines = nullptr;
+
     vtkSmartPointer<vtkOrientationMarkerWidget> widget;
     vtkSmartPointer<XKeyPressCallback> keycallback;
     vtkSmartPointer<vtkRenderWindowInteractor> renderWindowInteractor;
@@ -111,6 +115,10 @@ public:
 public:
     void read_bedshapes(std::string filepath);
     void setupUi(QMainWindow *MainWindow);
+    void add_bedshape(vtkSmartPointer<vtkRenderer> renderer);
+    void add_bedshape2(std::string bedshape_str, vtkSmartPointer<vtkRenderer> renderer);
+    void add_polylines(std::vector<Segment> segments, vtkSmartPointer<vtkRenderer> renderer);
+    void debug_qiu(std::vector<double> position,std::vector<double> color,vtkSmartPointer<vtkRenderer> renderer);
 };
 namespace Ui
 {

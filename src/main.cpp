@@ -21,7 +21,6 @@
 #include <boost/geometry.hpp>
 #include <boost/geometry/geometries/point_xy.hpp>
 #include <boost/geometry/geometries/polygon.hpp>
-#define BEDSHAPE_PATH "D:/0Learning/Vtk/0805_qt5_vtk/resource/bedshape/bedshapes.ini"
 
 int main(int argc, char *argv[])
 {
@@ -37,7 +36,6 @@ int main(int argc, char *argv[])
     // std::cout << "Area: " << area << std::endl;
     QApplication app(argc, argv);
     MainWindow mainWindow;
-    mainWindow.ui->read_bedshapes(BEDSHAPE_PATH);
 
     mainWindow.show();
     return app.exec();
