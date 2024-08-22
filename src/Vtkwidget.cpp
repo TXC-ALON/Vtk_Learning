@@ -30,7 +30,7 @@ void VtkWidget3D::initializeRenderer()
     m_renderWindow = vtkSmartPointer<vtkGenericOpenGLRenderWindow>::New();
     this->setRenderWindow(m_renderWindow);
     this->renderWindow()->AddRenderer(m_renderer);
-    this->m_renderer->GetActiveCamera()->SetPosition(0, 30, 0);  // 相机位置，这里假设相机在z轴正方向
+    this->m_renderer->GetActiveCamera()->SetPosition(0, 400, 0); // 相机位置，这里假设相机在z轴正方向
     this->m_renderer->GetActiveCamera()->SetFocalPoint(0, 0, 0); // 焦点位置，通常设置为场景的中心
     this->m_renderer->GetActiveCamera()->SetViewUp(0, 0, 1);     // 视图向上向量，这里假设向上为y轴正方向
     this->m_renderer->GetActiveCamera()->Azimuth(-45);           // 方位角，绕y轴旋转45度

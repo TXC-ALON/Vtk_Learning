@@ -207,7 +207,7 @@ void Ui_MainWindow::add_polylines(std::vector<Segment> segments, vtkSmartPointer
         lines->InsertNextCell(2);
         lines->InsertCellPoint(points->GetNumberOfPoints() - 2);
         lines->InsertCellPoint(points->GetNumberOfPoints() - 1);
-        std::cout << "Segment from (" << p1.x() << ", " << p1.y() << ") to (" << p2.x() << ", " << p2.y() << ")" << std::endl;
+        // std::cout << "Segment from (" << p1.x() << ", " << p1.y() << ") to (" << p2.x() << ", " << p2.y() << ")" << std::endl;
     }
     vtkSmartPointer<vtkPolyData> polyData = vtkSmartPointer<vtkPolyData>::New();
     // 将点和线添加到PolyData
@@ -225,6 +225,8 @@ void Ui_MainWindow::add_polylines(std::vector<Segment> segments, vtkSmartPointer
 
     // 设置颜色等属性
     Bedshape_Polylines->GetProperty()->SetColor(0, 0, 0);
+    debug_qiu({10, 20, 30}, {1, 0, 0}, renderer);
+    debug_qiu({10, 20, 0}, {0, 0, 1}, renderer);
 
     // debug_qiu({-95.7551, -70, 0}, {1, 0, 0}, renderer);
     // debug_qiu({-110.713, -70, 0}, {0, 1, 0}, renderer);
@@ -259,14 +261,14 @@ void Ui_MainWindow::add_bedshape2(std::string bedshape_str, vtkSmartPointer<vtkR
     std::string filePath = BEDSHAPE_PATH; // 替换为你的文件路径
     std::vector<Point> boost_points;
     vtkSmartPointer<vtkPoints> vtkPoints = ReadBedShapeFromStdString(bedshape_str, boost_points);
-    std::cout << "add_bedshape2" << std::endl;
-    std::cout << "boost_points size is " << boost_points.size() << std::endl;
+    // std::cout << "add_bedshape2" << std::endl;
+    // std::cout << "boost_points size is " << boost_points.size() << std::endl;
 
     vtkSmartPointer<vtkPolygon> polygon = vtkSmartPointer<vtkPolygon>::New();
     vtkNew<vtkNamedColors> colors;
     int numPoints = vtkPoints->GetNumberOfPoints();
     polygon->GetPointIds()->SetNumberOfIds(numPoints); // 设置多边形顶点数量
-    std::cout << "numPoints is " << numPoints << std::endl;
+    std::cout << "BedShape numPoints is " << numPoints << std::endl;
     for (int i = 0; i < numPoints; ++i)
     {
         polygon->GetPointIds()->SetId(i, i); // 将每个点的 ID 添加到多边形
@@ -289,6 +291,7 @@ void Ui_MainWindow::add_bedshape2(std::string bedshape_str, vtkSmartPointer<vtkR
     if (Bedshape == nullptr)
     {
         Bedshape = vtkSmartPointer<vtkActor>::New();
+        Bedshape->SetObjectName("BedShape");
     }
     Bedshape->SetMapper(mapper);
     // Bedshape->GetProperty()->SetEdgeVisibility(true);
@@ -303,18 +306,26 @@ void Ui_MainWindow::add_bedshape2(std::string bedshape_str, vtkSmartPointer<vtkR
               << bounds[2] << ", " << bounds[3] << ", "
               << bounds[4] << ", " << bounds[5] << "]"
               << std::endl;
+    Bedshape_Bound = 10;
+    for (int i = 0; i < 6; i++)
+    {
+        Bedshape_Bound = std::max(fabs(bounds[i]), Bedshape_Bound);
+    }
+    std::cout << "Bedshape_Bound " << Bedshape_Bound * 1.5 << std::endl;
+    Add_Line_Axes(vtkWidget->m_renderer, Bedshape_Bound * 1.5);
+
     if (1)
     {
         Boost_Polygon temp_poly = Boost_Polygon(boost_points);
         std::vector<Segment> segments = temp_poly.generateGridLines(10);
-        // 遍历线段向量并打印每个线段的端点
-        for (const auto &segment : segments)
-        {
-            const Point &p1 = segment.first;  // 获取线段的起点
-            const Point &p2 = segment.second; // 获取线段的终点
+        // // 遍历线段向量并打印每个线段的端点
+        // for (const auto &segment : segments)
+        // {
+        //     const Point &p1 = segment.first;  // 获取线段的起点
+        //     const Point &p2 = segment.second; // 获取线段的终点
 
-            std::cout << "Segment from (" << p1.x() << ", " << p1.y() << ") to (" << p2.x() << ", " << p2.y() << ")" << std::endl;
-        }
+        //     std::cout << "Segment from (" << p1.x() << ", " << p1.y() << ") to (" << p2.x() << ", " << p2.y() << ")" << std::endl;
+        // }
         add_polylines(segments, renderer);
     }
 }
@@ -328,13 +339,13 @@ void Ui_MainWindow::add_bedshape(vtkSmartPointer<vtkRenderer> renderer)
     Boost_Polygon temp_poly = Boost_Polygon(boost_points);
     std::vector<Segment> segments = temp_poly.generateGridLines(20);
     // 遍历线段向量并打印每个线段的端点
-    for (const auto &segment : segments)
-    {
-        const Point &p1 = segment.first;  // 获取线段的起点
-        const Point &p2 = segment.second; // 获取线段的终点
+    // for (const auto &segment : segments)
+    // {
+    //     const Point &p1 = segment.first;  // 获取线段的起点
+    //     const Point &p2 = segment.second; // 获取线段的终点
 
-        std::cout << "Segment from (" << p1.x() << ", " << p1.y() << ") to (" << p2.x() << ", " << p2.y() << ")" << std::endl;
-    }
+    //     std::cout << "Segment from (" << p1.x() << ", " << p1.y() << ") to (" << p2.x() << ", " << p2.y() << ")" << std::endl;
+    // }
     vtkSmartPointer<vtkPolygon> polygon = vtkSmartPointer<vtkPolygon>::New();
     vtkNew<vtkNamedColors> colors;
     int numPoints = vtkPoints->GetNumberOfPoints();
@@ -478,10 +489,32 @@ void Ui_MainWindow::setupUi(QMainWindow *MainWindow)
     vtkWidget->interactor()->AddObserver(vtkCommand::KeyPressEvent, keycallback);
     // 添加坐标轴
     // Add_Arrow_Axes(vtkWidget->m_renderer, 15);
-    Add_Line_Axes(vtkWidget->m_renderer, 140);
+
     QString selectedBedShape = bedshapesComboBox->currentText();
     std::string bedshape_str = baseMap[selectedBedShape.toStdString()];
     add_bedshape2(bedshape_str, vtkWidget->m_renderer);
 
     // add_bedshape(vtkWidget->m_renderer);
+}
+
+void Ui_MainWindow::Add_Line_Axes(vtkSmartPointer<vtkRenderer> renderer, double scaleFactor)
+{
+    vtkNew<vtkAxes> modelAxesSource;
+    modelAxesSource->SetScaleFactor(scaleFactor);
+    modelAxesSource->SetOrigin(0, 0, 0);
+
+    vtkNew<vtkTubeFilter> tubeFilter;
+    tubeFilter->SetInputConnection(modelAxesSource->GetOutputPort());
+    tubeFilter->SetRadius(0.5);
+    tubeFilter->SetNumberOfSides(50);
+
+    vtkNew<vtkPolyDataMapper> modelAxesMapper;
+    modelAxesMapper->SetInputConnection(tubeFilter->GetOutputPort());
+    if (modelAxes == nullptr)
+    {
+        modelAxes = vtkSmartPointer<vtkActor>::New();
+    }
+
+    modelAxes->SetMapper(modelAxesMapper);
+    renderer->AddActor(modelAxes);
 }

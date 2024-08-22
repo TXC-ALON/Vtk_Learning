@@ -41,3 +41,5 @@
 #include <vtkParametricMobius.h>
 #include <vtkParametricFunctionSource.h>
 #include <vtkMath.h>
+#include <vtkInformationStringKey.h>
+#include <vtkInformation.h>

@@ -239,8 +239,8 @@ private:
                   });
         if (intersectionPoints.size() >= 2)
         {
-            std::cout << "Segment size is " << intersectionPoints.size() << std::endl;
-            // 创建一个临时向量来存储所有交点对
+            // std::cout << "Segment size is " << intersectionPoints.size() << std::endl;
+            //  创建一个临时向量来存储所有交点对
             std::vector<Segment> segmentsFromIntersections;
 
             // 如果有偶数个交点，则按顺序配对并添加到向量中
@@ -251,14 +251,14 @@ private:
                     segmentsFromIntersections.emplace_back(intersectionPoints[i], intersectionPoints[i + 1]);
                 }
             }
-            if (intersectionPoints.size() >= 4)
-            {
-                for (std::size_t i = 0; i < intersectionPoints.size(); i += 2)
-                {
-                    std::cout << "multi Segment from (" << intersectionPoints[i].x() << ", " << intersectionPoints[i].y() << ") to ("
-                              << intersectionPoints[i + 1].x() << ", " << intersectionPoints[i + 1].y() << ")" << std::endl;
-                }
-            }
+            // if (intersectionPoints.size() >= 4)
+            // {
+            //     for (std::size_t i = 0; i < intersectionPoints.size(); i += 2)
+            //     {
+            //         std::cout << "multi Segment from (" << intersectionPoints[i].x() << ", " << intersectionPoints[i].y() << ") to ("
+            //                   << intersectionPoints[i + 1].x() << ", " << intersectionPoints[i + 1].y() << ")" << std::endl;
+            //     }
+            // }
             // 将有效的线段添加到最终的 gridLines 向量中
             gridLines.insert(gridLines.end(), segmentsFromIntersections.begin(), segmentsFromIntersections.end());
         }
